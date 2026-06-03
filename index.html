@@ -112,6 +112,14 @@ tbody tr:hover td{background:#fef9f9}
 #gfl{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999}
 #gfl-logo{color:#C00000;font-size:28px;font-weight:700;letter-spacing:2px;margin-bottom:16px}
 #gfl-sub{color:#aaa;font-size:13px;margin-top:12px}
+#det-ot{background:#f8f9fa;border:1px solid #e0e2e8;border-radius:6px;margin-top:12px;padding:12px;display:none}
+#det-ot table{width:100%;border-collapse:collapse;font-size:12px}
+#det-ot th{background:#1A237E;color:#fff;padding:6px 10px;text-align:left}
+#det-ot td{padding:5px 10px;border-bottom:1px solid #e0e2e8}
+#det-ot tr:hover{background:#eef2ff}
+.tr-pend{cursor:pointer}
+.tr-pend:hover{filter:brightness(0.96)}
+.tr-pend.sel{outline:2px solid #1A237E}
 .gfl-sp{width:40px;height:40px;border:3px solid #333;border-top:3px solid #C00000;border-radius:50%;animation:gflsp .8s linear infinite}
 @keyframes gflsp{to{transform:rotate(360deg)}}
 </style>
@@ -739,7 +747,7 @@ function renderPendientes(){
       var cod=r[17]||0;
       var col=cod===2?'var(--R)':cod===1?'var(--A)':'var(--G)';
       var bg=cod===2?'rgba(192,0,0,0.04)':cod===1?'rgba(239,159,39,0.04)':'rgba(29,158,117,0.04)';
-      h+='<tr style="background:'+bg+'">';
+      h+='<tr class="tr-pend" data-cons="'+r[15]+'" data-pat="'+r[0]+'" style="background:'+bg+'">';
       h+='<td style="font-weight:600">'+r[0]+'</td>';
       h+='<td>'+r[1]+'</td>';
       h+='<td>'+r[2]+'</td>';
@@ -758,7 +766,57 @@ function renderPendientes(){
   }
   h+='</tbody></table></div>';
   if(pf.length>500)h+='<p style="color:#6b7280;font-size:12px;margin-top:8px">Mostrando 500 de '+pf.length+' registros</p>';
+  h+='<div id="det-ot"></div>';
   cont.innerHTML=h;
+  // Agregar click en cada fila para mostrar tareas
+  cont.querySelectorAll('.tr-pend').forEach(function(tr){
+    tr.addEventListener('click',function(){
+      cont.querySelectorAll('.tr-pend').forEach(function(t){t.classList.remove('sel');});
+      tr.classList.add('sel');
+      var cons=tr.dataset.cons;
+      var patente=tr.dataset.pat;
+      cargarTareasOT(cons, patente);
+    });
+  });
+}
+
+function cargarTareasOT(cons, patente) {
+  var det = document.getElementById('det-ot');
+  if (!det) return;
+  det.style.display = 'block';
+  det.innerHTML = '<p style="color:#6b7280;padding:8px">Cargando tareas de OT '+cons+'...</p>';
+
+  fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec?consecutivo="+encodeURIComponent(cons), {cache:"no-store"})
+    .then(function(r){return r.json();})
+    .then(function(tareas){
+      if (!tareas || !tareas.length) {
+        det.innerHTML = '<p style="color:#6b7280;padding:8px">Sin tareas encontradas para OT '+cons+'</p>';
+        return;
+      }
+      var h = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">';
+      h += '<strong style="color:#1A237E">Tareas pendientes — Vehículo: '+patente+' | OT: '+cons+'</strong>';
+      h += '<span style="background:#C00000;color:#fff;border-radius:3px;padding:2px 8px;font-size:11px">'+tareas.length+' tareas</span>';
+      h += '</div>';
+      h += '<table><thead><tr>';
+      h += '<th>#</th><th>Tarea</th><th>Tipo</th><th>Km a Ejecutar</th><th>Desvío Km</th><th>Fecha Progr.</th><th>Desvío Fecha</th>';
+      h += '</tr></thead><tbody>';
+      tareas.forEach(function(t, i) {
+        h += '<tr>';
+        h += '<td style="color:#6b7280">'+(i+1)+'</td>';
+        h += '<td>'+t.tarea+'</td>';
+        h += '<td>'+t.tipo+'</td>';
+        h += '<td style="text-align:right">'+(t.kmEjecutar?fmt(t.kmEjecutar):'—')+'</td>';
+        h += '<td style="color:#C00000;font-weight:600">'+(t.difKm||'—')+'</td>';
+        h += '<td style="text-align:center">'+(t.fechaProgr||'—')+'</td>';
+        h += '<td style="color:#C00000">'+(t.difFecha||'—')+'</td>';
+        h += '</tr>';
+      });
+      h += '</tbody></table>';
+      det.innerHTML = h;
+    })
+    .catch(function(e){
+      det.innerHTML = '<p style="color:#C00000;padding:8px">Error al cargar tareas: '+e.message+'</p>';
+    });
 }
 
 buildOpts();initDD();go();
