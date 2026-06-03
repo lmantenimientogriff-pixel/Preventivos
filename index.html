@@ -297,24 +297,45 @@ tbody tr:hover td{background:#fef9f9}
 <script>
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec";
 
-// JSONP — evita CORS entre GitHub Pages y Apps Script Web App
-window.__gscb = function(json) {
-  var D  = json.D  || [];
-  var UM = json.UM || [];
-  document.getElementById("loader").style.display = "none";
-  iniciar(D, UM);
-};
-
 window.addEventListener("DOMContentLoaded", function() {
-  var s   = document.createElement("script");
+  fetch(SCRIPT_URL, { redirect: "follow" })
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      // Apps Script puede devolver JSONP o JSON puro según el redirect
+      // Limpiar prefijo de callback si lo hubiera
+      var clean = txt.trim();
+      if (clean.startsWith("__gscb(") || clean.startsWith("__gscb (")) {
+        clean = clean.replace(/^__gscb\s*\(/, "").replace(/\)\s*;?\s*$/, "");
+      }
+      var json = JSON.parse(clean);
+      var D  = json.D  || [];
+      var UM = json.UM || [];
+      document.getElementById("loader").style.display = "none";
+      iniciar(D, UM);
+    })
+    .catch(function(err) {
+      // fetch bloqueado por CORS — usar XHR con no-cors no da datos
+      // Fallback: cargar via script tag (JSONP con follow redirect)
+      cargarJSONP();
+    });
+});
+
+function cargarJSONP() {
+  window.__gscb = function(json) {
+    var D  = json.D  || [];
+    var UM = json.UM || [];
+    document.getElementById("loader").style.display = "none";
+    iniciar(D, UM);
+  };
+  var s = document.createElement("script");
+  s.src = SCRIPT_URL + "?callback=__gscb&t=" + Date.now();
   s.onerror = function() {
     var el = document.getElementById("loader-sub");
     el.style.color = "#ff6b6b";
-    el.textContent = "Error al cargar datos. Verificá que la Web App esté publicada como pública.";
+    el.textContent = "Error: abrí la URL de la Web App en el navegador y verificá que muestre datos JSON.";
   };
-  s.src = SCRIPT_URL + "?callback=__gscb";
   document.head.appendChild(s);
-});
+}
 
 function iniciar(D, UM) {
 var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
