@@ -295,15 +295,16 @@ tbody tr:hover td{background:#fef9f9}
 <script>
 var D=[];
 var UM=[];
-fetch("https://corsproxy.io/?" + encodeURIComponent("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec"))
+var DATA=[];
+fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec",{cache:"no-store"})
 .then(function(r){return r.json();})
 .then(function(j){
   D=j.D||[];
   UM=j.UM||[];
+  DATA=D.slice();
   document.getElementById("gfl").style.display="none";
 
 var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
-var DATA=D.slice();
 var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],v:'',desde:'',hasta:''};
 var OPTS={};
 var DDCFG=[
@@ -705,6 +706,7 @@ toast(fmt(D.length)+' registros cargados','ok');
 .catch(function(e){
   document.getElementById("gfl-sub").style.color="#ff6b6b";
   document.getElementById("gfl-sub").textContent="Error: "+e.message;
+  console.error("fetch error:",e);
 });
 </script>
 </body>
