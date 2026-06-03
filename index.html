@@ -114,13 +114,32 @@ tbody tr:hover td{background:#fef9f9}
 #loader-sub{color:#aaa;font-size:13px;margin-top:12px}
 .spin{width:40px;height:40px;border:3px solid #333;border-top:3px solid #C00000;border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+#url-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:#111;border-bottom:2px solid #C00000;padding:8px 16px;display:flex;align-items:center;gap:8px}
+#url-input{flex:1;padding:6px 10px;background:#222;border:1px solid #444;color:#fff;font-size:12px;border-radius:4px;font-family:monospace}
+#url-input:focus{outline:none;border-color:#C00000}
+#url-btn{padding:6px 14px;background:#C00000;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+#url-btn:hover{background:#a00}
+#url-lbl{color:#888;font-size:11px;white-space:nowrap}
+#url-status{font-size:11px;color:#888;white-space:nowrap}
+/* empujar el contenido para que no quede debajo de la url-bar */
+body{padding-top:44px}
 </style>
 </head>
 <body>
+
 <div id="loader">
-<div id="loader-logo">GRIFFOULI&Egrave;RE</div>
-<div class="spin"></div>
-<div id="loader-sub">Cargando datos...</div>
+  <div id="loader-logo">GRIFFOULI&Egrave;RE</div>
+  <div class="spin"></div>
+  <div id="loader-sub">Ingres&aacute; la URL de la Web App y hac&eacute; clic en Cargar</div>
+</div>
+
+<div id="url-bar">
+  <span id="url-lbl">Web App URL:</span>
+  <input id="url-input" type="text"
+    placeholder="https://script.google.com/macros/s/.../exec"
+    value="https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec"/>
+  <button id="url-btn" onclick="cargarDatos()">&#9654; Cargar</button>
+  <span id="url-status"></span>
 </div>
 
 <div id="bar">
@@ -293,15 +312,32 @@ tbody tr:hover td{background:#fef9f9}
 <div id="tst"></div>
 
 <script>
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec";
+function cargarDatos() {
+  var url = document.getElementById('url-input').value.trim();
+  if (!url) { alert('Ingres\u00e1 la URL de la Web App'); return; }
 
-fetch(SCRIPT_URL)
-  .then(function(r){ return r.json(); })
-  .then(function(json){
-    var D  = json.D  || [];
-    var UM = json.UM || [];
-    document.getElementById('loader').style.display = 'none';
-    (function(){
+  // Guardar en localStorage para no tener que escribirla de nuevo
+  try { localStorage.setItem('gf_url', url); } catch(e) {}
+
+  var loader = document.getElementById('loader');
+  var status = document.getElementById('url-status');
+  var btn    = document.getElementById('url-btn');
+
+  loader.style.display = 'flex';
+  document.getElementById('loader-sub').textContent = 'Cargando datos...';
+  status.textContent = 'Cargando...';
+  btn.disabled = true;
+
+  fetch(url)
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      var json = JSON.parse(txt);
+      var D  = json.D  || [];
+      var UM = json.UM || [];
+      loader.style.display = 'none';
+      status.textContent = D.length + ' registros';
+      btn.disabled = false;
+      (function(){
 var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
 var DATA=D.slice();
 var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],v:'',desde:'',hasta:''};
@@ -701,13 +737,28 @@ window.addEventListener('resize',function(){tend('cv1',220);tend('cv2',300);});
 
 buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
-    })();
-  })
-  .catch(function(err){
-    document.getElementById('loader-sub').style.color = '#ff6b6b';
-    document.getElementById('loader-sub').textContent = 'Error: ' + err.message;
-    console.error('Error cargando datos:', err);
-  });
+      })();
+    })
+    .catch(function(err) {
+      loader.style.display = 'none';
+      status.style.color = '#ff6b6b';
+      status.textContent = 'Error: ' + err.message;
+      btn.disabled = false;
+      console.error('Error:', err);
+    });
+}
+
+// Al cargar la página: restaurar URL guardada y cargar automáticamente
+window.addEventListener('DOMContentLoaded', function() {
+  try {
+    var saved = localStorage.getItem('gf_url');
+    if (saved) document.getElementById('url-input').value = saved;
+  } catch(e) {}
+  // Cargar automáticamente si hay URL
+  if (document.getElementById('url-input').value.trim()) {
+    cargarDatos();
+  }
+});
 </script>
 </body>
 </html>
