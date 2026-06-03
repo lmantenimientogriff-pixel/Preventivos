@@ -217,7 +217,7 @@ tbody tr:hover td{background:#fef9f9}
     <button class="tb act" data-t="g">Analisis</button>
     <button class="tb" data-t="c">Centros Costo</button>
     <button class="tb" data-t="t">Tendencia</button>
-    <button class="tb" data-t="h">Mapa Calor</button>
+    
     <button class="tb" data-t="d">Detalle OT</button>
     <button class="tb" data-t="u">Unidades Fuera Margen</button>
     <button class="tb" data-t="p">Pendientes x Ejecutar</button>
@@ -259,7 +259,7 @@ tbody tr:hover td{background:#fef9f9}
       <div style="height:300px"><canvas id="cv2"></canvas></div>
       <div style="margin-top:20px;overflow-x:auto" id="ttend"></div>
     </div>
-    <div class="tp" id="tp-h">
+    <div class="tp" id="tp-h" style="display:none!important">
       <div class="stit">Mapa de Calor - % A Tiempo (con margen) por Centro y Mes</div>
       <div class="hm"><div class="hmg" id="hmg"></div></div>
       <div style="margin-top:12px;display:flex;gap:16px;align-items:center;font-size:11px;color:var(--GT)">
@@ -274,7 +274,7 @@ tbody tr:hover td{background:#fef9f9}
       <div class="sw">
         <table><thead><tr>
           <th>#</th><th>Vehiculo</th><th>Tipo</th><th>Marca</th><th>Tarea</th>
-          <th>Rutina</th><th>N OT</th><th>Fecha</th><th>Estado</th>
+          <th>Rutina</th><th>Consecutivo</th><th>Fecha</th><th>Estado</th>
           <th>Desvio</th><th>Grupo Primario</th><th>Ciudad</th><th>Centro</th>
         </tr></thead><tbody id="tbody"></tbody></table>
       </div>
@@ -673,7 +673,11 @@ function tablaUM(){
     if(r[KI]>map[v].maxK) map[v].maxK=r[KI];
     if(r[FE]>map[v].ult)  map[v].ult=r[FE];
   });
-  var rows=Object.entries(map).sort(function(a,b){return b[1].cant-a[1].cant;});
+  var rows=Object.entries(map).sort(function(a,b){
+    var da=Math.max(a[1].maxD,a[1].maxK);
+    var db=Math.max(b[1].maxD,b[1].maxK);
+    return db-da;
+  });
   var cnt=document.getElementById('um-count');
   if(cnt) cnt.textContent=rows.length+' unidades';
   if(!rows.length){
@@ -726,6 +730,9 @@ function renderPendientes(){
     if(FIL.gp.length&&FIL.gp.indexOf(r[5])<0)return false;
     if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
     return true;
+  }).sort(function(a,b){
+    if(b[17]!==a[17]) return b[17]-a[17];
+    return Math.abs(b[10])-Math.abs(a[10]);
   });
   var porVencer  = pf.filter(function(r){return r[17]===0;}).length;
   var vencMar    = pf.filter(function(r){return r[17]===1;}).length;
@@ -784,17 +791,17 @@ function cargarTareasOT(cons, patente) {
   var det = document.getElementById('det-ot');
   if (!det) return;
   det.style.display = 'block';
-  det.innerHTML = '<p style="color:#6b7280;padding:8px">Cargando tareas de OT '+cons+'...</p>';
+  det.innerHTML = '<p style="color:#6b7280;padding:8px">Cargando tareas de Consecutivo '+cons+'...</p>';
 
   fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec?consecutivo="+encodeURIComponent(cons), {cache:"no-store"})
     .then(function(r){return r.json();})
     .then(function(tareas){
       if (!tareas || !tareas.length) {
-        det.innerHTML = '<p style="color:#6b7280;padding:8px">Sin tareas encontradas para OT '+cons+'</p>';
+        det.innerHTML = '<p style="color:#6b7280;padding:8px">Sin tareas encontradas para Consecutivo '+cons+'</p>';
         return;
       }
       var h = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">';
-      h += '<strong style="color:#1A237E">Tareas pendientes — Vehículo: '+patente+' | OT: '+cons+'</strong>';
+      h += '<strong style="color:#1A237E">Tareas pendientes — Vehículo: '+patente+' | Consecutivo: '+cons+'</strong>';
       h += '<span style="background:#C00000;color:#fff;border-radius:3px;padding:2px 8px;font-size:11px">'+tareas.length+' tareas</span>';
       h += '</div>';
       h += '<table><thead><tr>';
