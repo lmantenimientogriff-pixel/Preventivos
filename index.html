@@ -306,55 +306,13 @@ body{padding-top:42px!important}
 <div id="tst"></div>
 
 <script>
-// Variables globales — la lógica del tablero las usa directamente
+// ── Variables globales que usa la lógica del tablero ──────────
 var D  = [];
 var UM = [];
 
-// Carga de datos desde Apps Script Web App
-function cargarDatos() {
-  var url    = document.getElementById('url-input').value.trim();
-  var loader = document.getElementById('loader');
-  var status = document.getElementById('url-status');
-  var btn    = document.getElementById('url-btn');
-  if (!url) return;
-  try { localStorage.setItem('gf_url', url); } catch(e) {}
-  loader.style.display = 'flex';
-  document.getElementById('loader-sub').textContent = 'Cargando datos...';
-  status.textContent = 'Cargando...';
-  btn.disabled = true;
-  fetch(url)
-    .then(function(r) { return r.text(); })
-    .then(function(txt) {
-      var json;
-      try { json = JSON.parse(txt); }
-      catch(e) {
-        var m = txt.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        if (m) json = JSON.parse(m[1]);
-        else throw new Error('Respuesta invalida');
-      }
-      // Asignar a las variables globales declaradas arriba
-      D  = json.D  || [];
-      UM = json.UM || [];
-      loader.style.display = 'none';
-      status.textContent = D.length + ' registros';
-      btn.disabled = false;
-      // Ejecutar la logica del tablero — DATA, FIL, etc se declaran aqui
-      ejecutarTablero();
-    })
-    .catch(function(err) {
-      loader.style.display = 'none';
-      status.style.color = '#ff6b6b';
-      status.textContent = 'Error: ' + err.message;
-      btn.disabled = false;
-    });
-}
-
-// Lógica completa del tablero — se ejecuta después de cargar D y UM
-// Todas las variables internas (DATA, FIL, OPTS, etc) se declaran aquí
-// en el mismo scope donde están D y UM
-var ejecutarTablero = function() {
+// ── Lógica completa del tablero en scope global ───────────────
+// Constantes, estado, funciones — todo accesible globalmente
 var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
-var DATA=D.slice();
 var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],v:'',desde:'',hasta:''};
 var OPTS={};
 var DDCFG=[
@@ -750,9 +708,51 @@ document.querySelectorAll('.tb').forEach(function(btn){
 
 window.addEventListener('resize',function(){tend('cv1',220);tend('cv2',300);});
 
+
+// ── Función de inicio — se llama después de cargar D y UM ─────
+function iniciarTablero() {
+  var DATA = D.slice();
+var DATA=D.slice();
 buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
-};
+}
+
+// ── Carga de datos desde Apps Script Web App ─────────────────
+function cargarDatos() {
+  var url    = document.getElementById('url-input').value.trim();
+  var loader = document.getElementById('loader');
+  var status = document.getElementById('url-status');
+  var btn    = document.getElementById('url-btn');
+  if (!url) return;
+  try { localStorage.setItem('gf_url', url); } catch(e) {}
+  loader.style.display = 'flex';
+  document.getElementById('loader-sub').textContent = 'Cargando datos...';
+  status.textContent = 'Cargando...';
+  btn.disabled = true;
+  fetch(url)
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      var json;
+      try { json = JSON.parse(txt); }
+      catch(e) {
+        var m = txt.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (m) json = JSON.parse(m[1]);
+        else throw new Error('Respuesta invalida');
+      }
+      D  = json.D  || [];
+      UM = json.UM || [];
+      loader.style.display = 'none';
+      status.textContent = D.length + ' registros';
+      btn.disabled = false;
+      iniciarTablero();
+    })
+    .catch(function(err) {
+      loader.style.display = 'none';
+      status.style.color = '#ff6b6b';
+      status.textContent = 'Error: ' + err.message;
+      btn.disabled = false;
+    });
+}
 
 window.addEventListener('DOMContentLoaded', function() {
   try {
