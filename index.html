@@ -117,11 +117,7 @@ tbody tr:hover td{background:#fef9f9}
 </style>
 </head>
 <body>
-<div id="gfl">
-<div id="gfl-logo">GRIFFOULIÈRE</div>
-<div class="gfl-sp"></div>
-<div id="gfl-sub">Cargando datos...</div>
-</div>
+<div id="gfl"><div id="gfl-logo">GRIFFOULIÈRE</div><div class="gfl-sp"></div><div id="gfl-sub">Cargando datos...</div></div>
 
 <div id="bar">
   <div id="bl">
@@ -216,6 +212,7 @@ tbody tr:hover td{background:#fef9f9}
     <button class="tb" data-t="h">Mapa Calor</button>
     <button class="tb" data-t="d">Detalle OT</button>
     <button class="tb" data-t="u">Unidades Fuera Margen</button>
+    <button class="tb" data-t="p">Pendientes x Ejecutar</button>
   </div>
   <div id="tc">
     <div class="tp act" id="tp-g">
@@ -287,6 +284,10 @@ tbody tr:hover td{background:#fef9f9}
         </tr></thead><tbody id="tbody-um"></tbody></table>
       </div>
     </div>
+    <div class="tp" id="tp-p">
+      <div class="stit">Preventivos Pendientes por Ejecutar &mdash; Consolidado por Veh&iacute;culo y Rutina</div>
+      <div id="pend-cont"><p style="color:#6b7280;text-align:center;padding:24px">Seleccion&aacute; el tab Pendientes para cargar</p></div>
+    </div>
   </div>
 </div>
 <div style="height:24px"></div>
@@ -296,11 +297,13 @@ tbody tr:hover td{background:#fef9f9}
 var D=[];
 var UM=[];
 var DATA=[];
+var P=[];
 fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec",{cache:"no-store"})
 .then(function(r){return r.json();})
 .then(function(j){
   D=j.D||[];
   UM=j.UM||[];
+  P=j.P||[];
   DATA=D.slice();
   document.getElementById("gfl").style.display="none";
 
@@ -692,6 +695,7 @@ document.querySelectorAll('.tb').forEach(function(btn){
     document.querySelectorAll('.tp').forEach(function(p){p.classList.remove('act');});
     btn.classList.add('act');
     document.getElementById('tp-'+btn.dataset.t).classList.add('act');
+    if(btn.dataset.t==='p'){renderPendientes();}
     if(btn.dataset.t==='g'||btn.dataset.t==='t'){
       setTimeout(function(){tend('cv1',220);tend('cv2',300);},60);
     }
@@ -699,6 +703,58 @@ document.querySelectorAll('.tb').forEach(function(btn){
 });
 
 window.addEventListener('resize',function(){tend('cv1',220);tend('cv2',300);});
+
+
+function renderPendientes(){
+  var cont=document.getElementById('pend-cont');
+  if(!cont)return;
+  var pf=P.filter(function(r){
+    if(FIL.ce.length&&FIL.ce.indexOf(r[3])<0)return false;
+    if(FIL.ti.length&&FIL.ti.indexOf(r[1])<0)return false;
+    if(FIL.m.length&&FIL.m.indexOf(r[2])<0)return false;
+    if(FIL.ci.length&&FIL.ci.indexOf(r[4])<0)return false;
+    if(FIL.gp.length&&FIL.gp.indexOf(r[5])<0)return false;
+    if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
+    return true;
+  });
+  var venc=pf.filter(function(r){return r[10]<0;}).length;
+  var porv=pf.filter(function(r){return r[10]>=0;}).length;
+  var h='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">';
+  h+='<div class="kc" style="border-top:4px solid #C00000"><div class="kl">TOTAL PENDIENTES</div><div class="kv">'+pf.length+'</div></div>';
+  h+='<div class="kc" style="border-top:4px solid #EA4335"><div class="kl">VENCIDOS</div><div class="kv" style="color:#C00000">'+venc+'</div></div>';
+  h+='<div class="kc" style="border-top:4px solid #EF9F27"><div class="kl">POR VENCER</div><div class="kv" style="color:#E07B39">'+porv+'</div></div>';
+  h+='</div>';
+  h+='<div style="overflow-x:auto"><table class="dt"><thead><tr>';
+  ['Vehículo','Tipo','Marca','Centro de Costos','Ciudad','Rutina','Estado','Trigger','Desvío','Km Actual','Km a Ejecutar','Fecha Progr.','Tareas Pend.'].forEach(function(c){h+='<th>'+c+'</th>';});
+  h+='</tr></thead><tbody>';
+  if(!pf.length){
+    h+='<tr><td colspan="13" style="text-align:center;color:#6b7280;padding:24px">Sin datos</td></tr>';
+  }else{
+    pf.slice(0,500).forEach(function(r){
+      var vencido=r[10]<0;
+      var col=vencido?'#C00000':'#E07B39';
+      var bg=vencido?'rgba(192,0,0,0.04)':'rgba(239,159,39,0.04)';
+      h+='<tr style="background:'+bg+'">';
+      h+='<td style="font-weight:600">'+r[0]+'</td>';
+      h+='<td>'+r[1]+'</td>';
+      h+='<td>'+r[2]+'</td>';
+      h+='<td>'+r[3]+'</td>';
+      h+='<td>'+r[4]+'</td>';
+      h+='<td>'+(r[6]||'—')+'</td>';
+      h+='<td style="color:'+col+';font-weight:600">'+r[7]+'</td>';
+      h+='<td style="text-align:center">'+(r[8]==='k'?'Km':'Días')+'</td>';
+      h+='<td style="color:'+col+';font-weight:600">'+(r[9]||'—')+'</td>';
+      h+='<td style="text-align:right">'+(r[11]?fmt(r[11]):'—')+'</td>';
+      h+='<td style="text-align:right">'+(r[12]?fmt(r[12]):'—')+'</td>';
+      h+='<td style="text-align:center">'+(r[13]||'—')+'</td>';
+      h+='<td style="text-align:center">'+r[14]+'</td>';
+      h+='</tr>';
+    });
+  }
+  h+='</tbody></table></div>';
+  if(pf.length>500)h+='<p style="color:#6b7280;font-size:12px;margin-top:8px">Mostrando 500 de '+pf.length+' registros</p>';
+  cont.innerHTML=h;
+}
 
 buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
