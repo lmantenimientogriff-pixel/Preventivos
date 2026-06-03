@@ -310,38 +310,38 @@ var D = [];
 var UM = [];
 
 function cargarDatos() {
-  var url    = document.getElementById("url-input").value.trim();
-  var loader = document.getElementById("loader");
-  var status = document.getElementById("url-status");
-  var btn    = document.getElementById("url-btn");
-  if (!url) { alert("Ingres\u00e1 la URL"); return; }
-  try { localStorage.setItem("gf_url", url); } catch(e){}
-  loader.style.display = "flex";
-  document.getElementById("loader-sub").textContent = "Cargando datos...";
-  status.style.color = "#aaa";
-  status.textContent = "Cargando...";
+  var url    = document.getElementById('url-input').value.trim();
+  var loader = document.getElementById('loader');
+  var status = document.getElementById('url-status');
+  var btn    = document.getElementById('url-btn');
+  if (!url) { alert('Ingresá la URL'); return; }
+  try { localStorage.setItem('gf_url', url); } catch(e) {}
+  loader.style.display = 'flex';
+  document.getElementById('loader-sub').textContent = 'Cargando datos...';
+  status.style.color = '#aaa';
+  status.textContent = 'Cargando...';
   btn.disabled = true;
   fetch(url)
-    .then(function(r){ return r.text(); })
-    .then(function(txt){
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
       var json;
       try { json = JSON.parse(txt); }
       catch(e) {
         var m = txt.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
         if (m) json = JSON.parse(m[1]);
-        else throw new Error("Respuesta inválida");
+        else throw new Error('Respuesta inválida');
       }
       D  = json.D  || [];
       UM = json.UM || [];
-      loader.style.display = "none";
-      status.textContent = D.length + " registros";
+      loader.style.display = 'none';
+      status.textContent = D.length + ' registros';
       btn.disabled = false;
       iniciarTablero();
     })
-    .catch(function(err){
-      loader.style.display = "none";
-      status.style.color = "#ff6b6b";
-      status.textContent = "Error: " + err.message;
+    .catch(function(err) {
+      loader.style.display = 'none';
+      status.style.color = '#ff6b6b';
+      status.textContent = 'Error: ' + err.message;
       btn.disabled = false;
       console.error(err);
     });
@@ -749,11 +749,11 @@ buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
 }
 
-window.addEventListener("DOMContentLoaded", function() {
+window.addEventListener('DOMContentLoaded', function() {
   try {
-    var saved = localStorage.getItem("gf_url");
-    if (saved) document.getElementById("url-input").value = saved;
-  } catch(e){}
+    var saved = localStorage.getItem('gf_url');
+    if (saved) document.getElementById('url-input').value = saved;
+  } catch(e) {}
   cargarDatos();
 });
 </script>
