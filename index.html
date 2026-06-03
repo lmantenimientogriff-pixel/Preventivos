@@ -306,19 +306,20 @@ body{padding-top:42px!important}
 <div id="tst"></div>
 
 <script>
-var D = [];
+// Variables globales — la lógica del tablero las usa directamente
+var D  = [];
 var UM = [];
 
+// Carga de datos desde Apps Script Web App
 function cargarDatos() {
   var url    = document.getElementById('url-input').value.trim();
   var loader = document.getElementById('loader');
   var status = document.getElementById('url-status');
   var btn    = document.getElementById('url-btn');
-  if (!url) { alert('Ingresá la URL'); return; }
+  if (!url) return;
   try { localStorage.setItem('gf_url', url); } catch(e) {}
   loader.style.display = 'flex';
   document.getElementById('loader-sub').textContent = 'Cargando datos...';
-  status.style.color = '#aaa';
   status.textContent = 'Cargando...';
   btn.disabled = true;
   fetch(url)
@@ -329,25 +330,29 @@ function cargarDatos() {
       catch(e) {
         var m = txt.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
         if (m) json = JSON.parse(m[1]);
-        else throw new Error('Respuesta inválida');
+        else throw new Error('Respuesta invalida');
       }
+      // Asignar a las variables globales declaradas arriba
       D  = json.D  || [];
       UM = json.UM || [];
       loader.style.display = 'none';
       status.textContent = D.length + ' registros';
       btn.disabled = false;
-      iniciarTablero();
+      // Ejecutar la logica del tablero — DATA, FIL, etc se declaran aqui
+      ejecutarTablero();
     })
     .catch(function(err) {
       loader.style.display = 'none';
       status.style.color = '#ff6b6b';
       status.textContent = 'Error: ' + err.message;
       btn.disabled = false;
-      console.error(err);
     });
 }
 
-function iniciarTablero() {
+// Lógica completa del tablero — se ejecuta después de cargar D y UM
+// Todas las variables internas (DATA, FIL, OPTS, etc) se declaran aquí
+// en el mismo scope donde están D y UM
+var ejecutarTablero = function() {
 var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
 var DATA=D.slice();
 var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],v:'',desde:'',hasta:''};
@@ -747,7 +752,7 @@ window.addEventListener('resize',function(){tend('cv1',220);tend('cv2',300);});
 
 buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
-}
+};
 
 window.addEventListener('DOMContentLoaded', function() {
   try {
