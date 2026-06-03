@@ -331,9 +331,20 @@ function cargarDatos() {
   fetch(url)
     .then(function(r) { return r.text(); })
     .then(function(txt) {
-      var json = JSON.parse(txt);
-      var D  = json.D  || [];
-      var UM = json.UM || [];
+      // HtmlService devuelve el JSON dentro del body del HTML
+      // Intentar parsear directo; si falla, extraer del body
+      var json;
+      try {
+        json = JSON.parse(txt);
+      } catch(e) {
+        var m = txt.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (m) json = JSON.parse(m[1]);
+        else throw new Error('No se pudo parsear la respuesta');
+      }
+      window.D  = json.D  || [];
+      window.UM = json.UM || [];
+      var D  = window.D;
+      var UM = window.UM;
       loader.style.display = 'none';
       status.textContent = D.length + ' registros';
       btn.disabled = false;
