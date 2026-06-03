@@ -307,8 +307,9 @@ body{padding-top:42px!important}
 
 <script>
 // ── Variables globales que usa la lógica del tablero ──────────
-var D  = [];
-var UM = [];
+var D    = [];
+var UM   = [];
+var DATA = [];  // global — usada por getTd(), go(), etc.
 
 // ── Lógica completa del tablero en scope global ───────────────
 // Constantes, estado, funciones — todo accesible globalmente
@@ -711,7 +712,7 @@ window.addEventListener('resize',function(){tend('cv1',220);tend('cv2',300);});
 
 // ── Función de inicio — se llama después de cargar D y UM ─────
 function iniciarTablero() {
-  var DATA = D.slice();
+  DATA = D.slice();
 var DATA=D.slice();
 buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
