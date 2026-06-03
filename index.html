@@ -117,7 +117,7 @@ tbody tr:hover td{background:#fef9f9}
 </style>
 </head>
 <body>
-<div id="gfl"><div id="gfl-logo">GRIFFOULIÈRE</div><div class="gfl-sp"></div><div id="gfl-sub">Cargando datos...</div></div>
+<div id="gfl"><div id="gfl-logo">GRIFFOULIERE</div><div class="gfl-sp"></div><div id="gfl-sub">Cargando datos...</div></div>
 
 <div id="bar">
   <div id="bl">
@@ -432,6 +432,8 @@ function go(){
     return true;
   });
   rtags();kpis();donut();bars();centros();tend('cv1',220);tend('cv2',300);tendtbl();heatmap();tabla();tablaUM();
+  var tabActivo=document.querySelector('.tb.act');
+  if(tabActivo&&tabActivo.dataset.t==='p')renderPendientes();
 }
 
 function rtags(){
@@ -717,12 +719,15 @@ function renderPendientes(){
     if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
     return true;
   });
-  var venc=pf.filter(function(r){return r[10]<0;}).length;
-  var porv=pf.filter(function(r){return r[10]>=0;}).length;
+  var porVencer  = pf.filter(function(r){return r[17]===0;}).length;
+  var vencMar    = pf.filter(function(r){return r[17]===1;}).length;
+  var vencFuera  = pf.filter(function(r){return r[17]===2;}).length;
   var h='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">';
-  h+='<div class="kc" style="border-top:4px solid #C00000"><div class="kl">TOTAL PENDIENTES</div><div class="kv">'+pf.length+'</div></div>';
-  h+='<div class="kc" style="border-top:4px solid #EA4335"><div class="kl">VENCIDOS</div><div class="kv" style="color:#C00000">'+venc+'</div></div>';
-  h+='<div class="kc" style="border-top:4px solid #EF9F27"><div class="kl">POR VENCER</div><div class="kv" style="color:#E07B39">'+porv+'</div></div>';
+  h+='<div class="kc" style="border-top:4px solid var(--GT)"><div class="kl">TOTAL PENDIENTES</div><div class="kv">'+pf.length+'</div><div style="font-size:11px;color:var(--GT)">vehículos × rutina</div></div>';
+  h+='<div class="kc" style="border-top:4px solid var(--G)"><div class="kl">POR VENCER</div><div class="kv" style="color:var(--G)">'+porVencer+'</div><div style="font-size:11px;color:var(--GT)">dentro del plazo</div></div>';
+  h+='<div class="kc" style="border-top:4px solid var(--A)"><div class="kl">VENCIDO EN MARGEN</div><div class="kv" style="color:var(--A)">'+vencMar+'</div><div style="font-size:11px;color:var(--GT)">dentro del margen de proc.</div></div>';
+  h+='<div class="kc" style="border-top:4px solid var(--R)"><div class="kl">VENCIDO FUERA MARGEN</div><div class="kv" style="color:var(--R)">'+vencFuera+'</div><div style="font-size:11px;color:var(--GT)">supera margen - requiere atención</div></div>';
+  h+='<div class="kc" style="border-top:4px solid var(--GT)"><div class="kl">MARGENES</div><div class="kv" style="font-size:13px">Días: ≤15d</div><div style="font-size:11px;color:var(--GT)">Km: ≤1.000 gral / ≤5.000 CUYO-SHELL</div></div>';
   h+='</div>';
   h+='<div style="overflow-x:auto"><table class="dt"><thead><tr>';
   ['Vehículo','Tipo','Marca','Centro de Costos','Ciudad','Rutina','Estado','Trigger','Desvío','Km Actual','Km a Ejecutar','Fecha Progr.','Tareas Pend.'].forEach(function(c){h+='<th>'+c+'</th>';});
@@ -731,9 +736,9 @@ function renderPendientes(){
     h+='<tr><td colspan="13" style="text-align:center;color:#6b7280;padding:24px">Sin datos</td></tr>';
   }else{
     pf.slice(0,500).forEach(function(r){
-      var vencido=r[10]<0;
-      var col=vencido?'#C00000':'#E07B39';
-      var bg=vencido?'rgba(192,0,0,0.04)':'rgba(239,159,39,0.04)';
+      var cod=r[17]||0;
+      var col=cod===2?'var(--R)':cod===1?'var(--A)':'var(--G)';
+      var bg=cod===2?'rgba(192,0,0,0.04)':cod===1?'rgba(239,159,39,0.04)':'rgba(29,158,117,0.04)';
       h+='<tr style="background:'+bg+'">';
       h+='<td style="font-weight:600">'+r[0]+'</td>';
       h+='<td>'+r[1]+'</td>';
