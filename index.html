@@ -732,8 +732,12 @@ function renderPendientes(){
     if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
     return true;
   }).sort(function(a,b){
+    // Primero ordenar por grupo: fuera margen (2) > en margen (1) > por vencer (0)
     if(b[17]!==a[17]) return b[17]-a[17];
-    return Math.abs(b[10])-Math.abs(a[10]);
+    // Dentro de vencidos (código 1 y 2): mayor desvío primero (más negativo = más vencido)
+    if(a[17]>=1) return a[10]-b[10];
+    // Dentro de por vencer (código 0): menor desvío primero (más próximo primero)
+    return a[10]-b[10];
   });
   var porVencer  = pf.filter(function(r){return r[17]===0;}).length;
   var vencMar    = pf.filter(function(r){return r[17]===1;}).length;
