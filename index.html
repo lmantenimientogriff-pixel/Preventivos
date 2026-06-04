@@ -313,6 +313,56 @@ var UM=[];
 var DATA=[];
 var P=[];
 var PT={};
+
+function guardarCampoPlan(input) {
+  var clave   = input.dataset.clave;
+  var pat     = input.dataset.pat;
+  var cons    = input.dataset.cons;
+  var rut     = input.dataset.rut;
+  var campo   = input.dataset.campo;
+
+  // Leer ambos campos de la misma fila
+  var fila    = input.closest('tr');
+  var inpFecha = fila.querySelector('[data-campo="fechaPlanif"]');
+  var inpObs   = fila.querySelector('[data-campo="obs"]');
+  var fechaVal = inpFecha ? inpFecha.value : '';
+  var obsVal   = inpObs   ? inpObs.value   : '';
+
+  // Actualizar PT local
+  if (!PT[clave]) PT[clave] = {};
+  PT[clave].fechaPlanif = fechaVal;
+  PT[clave].obs         = obsVal;
+
+  // Indicador visual
+  var claveClean = clave.replace(/[^a-zA-Z0-9]/g,'_');
+  var span = document.getElementById('eg-'+claveClean);
+  if (span) { span.textContent = '...'; span.style.color = '#6b7280'; }
+
+  fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec", {
+    method: 'POST',
+    body: JSON.stringify({
+      patente:     pat,
+      consecutivo: cons,
+      rutina:      rut,
+      fechaPlanif: fechaVal,
+      obs:         obsVal,
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(j){
+    if (span) {
+      span.textContent = j.ok ? '✅' : '❌';
+      span.style.color = j.ok ? '#1D9E75' : '#C00000';
+      setTimeout(function(){ if(span) span.textContent=''; }, 3000);
+    }
+  })
+  .catch(function(e){
+    if (span) { span.textContent = '❌'; span.style.color = '#C00000'; }
+    console.error('guardarCampoPlan error:', e);
+  });
+}
+
+
 fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec",{cache:"no-store"})
 .then(function(r){return r.json();})
 .then(function(j){
@@ -803,54 +853,6 @@ function renderPendientes(){
       var patente=tr.dataset.pat;
       cargarTareasOT(cons, patente);
     });
-  });
-}
-
-function guardarCampoPlan(input) {
-  var clave   = input.dataset.clave;
-  var pat     = input.dataset.pat;
-  var cons    = input.dataset.cons;
-  var rut     = input.dataset.rut;
-  var campo   = input.dataset.campo;
-
-  // Leer ambos campos de la misma fila
-  var fila    = input.closest('tr');
-  var inpFecha = fila.querySelector('[data-campo="fechaPlanif"]');
-  var inpObs   = fila.querySelector('[data-campo="obs"]');
-  var fechaVal = inpFecha ? inpFecha.value : '';
-  var obsVal   = inpObs   ? inpObs.value   : '';
-
-  // Actualizar PT local
-  if (!PT[clave]) PT[clave] = {};
-  PT[clave].fechaPlanif = fechaVal;
-  PT[clave].obs         = obsVal;
-
-  // Indicador visual
-  var claveClean = clave.replace(/[^a-zA-Z0-9]/g,'_');
-  var span = document.getElementById('eg-'+claveClean);
-  if (span) { span.textContent = '...'; span.style.color = '#6b7280'; }
-
-  fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec", {
-    method: 'POST',
-    body: JSON.stringify({
-      patente:     pat,
-      consecutivo: cons,
-      rutina:      rut,
-      fechaPlanif: fechaVal,
-      obs:         obsVal,
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(j){
-    if (span) {
-      span.textContent = j.ok ? '✅' : '❌';
-      span.style.color = j.ok ? '#1D9E75' : '#C00000';
-      setTimeout(function(){ if(span) span.textContent=''; }, 3000);
-    }
-  })
-  .catch(function(e){
-    if (span) { span.textContent = '❌'; span.style.color = '#C00000'; }
-    console.error('guardarCampoPlan error:', e);
   });
 }
 
