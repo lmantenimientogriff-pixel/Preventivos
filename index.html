@@ -112,6 +112,12 @@ tbody tr:hover td{background:#fef9f9}
 #gfl{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a1a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999}
 #gfl-logo{color:#C00000;font-size:28px;font-weight:700;letter-spacing:2px;margin-bottom:16px}
 #gfl-sub{color:#aaa;font-size:13px;margin-top:12px}
+.campo-plan{padding:4px 8px;border:1px solid #d1d5db;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;background:#fff}
+.campo-plan:focus{outline:none;border-color:#1A237E;box-shadow:0 0 0 2px rgba(26,35,126,0.15)}
+.btn-guardar{padding:4px 12px;background:#1A237E;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-guardar:hover{background:#283593}
+.btn-guardar.ok{background:#1D9E75}
+.btn-guardar.err{background:#C00000}
 #det-ot{background:#f8f9fa;border:1px solid #e0e2e8;border-radius:6px;margin-top:12px;padding:12px;display:none}
 #det-ot table{width:100%;border-collapse:collapse;font-size:12px}
 #det-ot th{background:#1A237E;color:#fff;padding:6px 10px;text-align:left}
@@ -306,12 +312,14 @@ var D=[];
 var UM=[];
 var DATA=[];
 var P=[];
+var PT={};
 fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec",{cache:"no-store"})
 .then(function(r){return r.json();})
 .then(function(j){
   D=j.D||[];
   UM=j.UM||[];
   P=j.P||[];
+  PT=j.PT||{};
   DATA=D.slice();
   document.getElementById("gfl").style.display="none";
 
@@ -750,10 +758,10 @@ function renderPendientes(){
   h+='<div class="kc" style="border-top:4px solid var(--GT)"><div class="kl">MARGENES</div><div class="kv" style="font-size:13px">Días: ≤15d</div><div style="font-size:11px;color:var(--GT)">Km: ≤1.000 gral / ≤5.000 CUYO-SHELL</div></div>';
   h+='</div>';
   h+='<div style="overflow-x:auto"><table class="dt"><thead><tr>';
-  ['Vehículo','Tipo','Marca','Centro de Costos','Ciudad','Rutina','Estado','Trigger','Desvío','Km Actual','Km a Ejecutar','Fecha Progr.','Tareas Pend.'].forEach(function(c){h+='<th>'+c+'</th>';});
+  ['Vehículo','Tipo','Marca','Centro de Costos','Ciudad','Rutina','Estado','Trigger','Desvío','Km Actual','Km a Ejecutar','Fecha Progr.','Tareas Pend.','Fecha Planif. Taller','Observaciones',''].forEach(function(c){h+='<th>'+c+'</th>';});
   h+='</tr></thead><tbody>';
   if(!pf.length){
-    h+='<tr><td colspan="13" style="text-align:center;color:#6b7280;padding:24px">Sin datos</td></tr>';
+    h+='<tr><td colspan="16" style="text-align:center;color:#6b7280;padding:24px">Sin datos</td></tr>';
   }else{
     pf.slice(0,500).forEach(function(r){
       var cod=r[17]||0;
@@ -773,6 +781,11 @@ function renderPendientes(){
       h+='<td style="text-align:right">'+(r[12]?fmt(r[12]):'—')+'</td>';
       h+='<td style="text-align:center">'+(r[13]||'—')+'</td>';
       h+='<td style="text-align:center">'+r[14]+'</td>';
+      var clave=r[0]+'||'+r[15];
+      var ptd=PT[clave]||{};
+      h+='<td><input type="date" class="campo-plan" data-campo="fechaPlanif" data-clave="'+clave+'" data-pat="'+r[0]+'" data-cons="'+r[15]+'" data-rut="'+r[6]+'" value="'+(ptd.fechaPlanif||'')+'" onchange="guardarCampoPlan(this)"/></td>';
+      h+='<td><input type="text" class="campo-plan" data-campo="obs" data-clave="'+clave+'" data-pat="'+r[0]+'" data-cons="'+r[15]+'" data-rut="'+r[6]+'" placeholder="Observaciones..." value="'+(ptd.obs||'')+'" onblur="guardarCampoPlan(this)"/></td>';
+      h+='<td style="text-align:center"><span class="estado-guardado-'+clave.replace(/[^a-zA-Z0-9]/g,\'_\')+'"></span></td>';
       h+='</tr>';
     });
   }
@@ -789,6 +802,54 @@ function renderPendientes(){
       var patente=tr.dataset.pat;
       cargarTareasOT(cons, patente);
     });
+  });
+}
+
+function guardarCampoPlan(input) {
+  var clave   = input.dataset.clave;
+  var pat     = input.dataset.pat;
+  var cons    = input.dataset.cons;
+  var rut     = input.dataset.rut;
+  var campo   = input.dataset.campo;
+
+  // Leer ambos campos de la misma fila
+  var fila    = input.closest('tr');
+  var inpFecha = fila.querySelector('[data-campo="fechaPlanif"]');
+  var inpObs   = fila.querySelector('[data-campo="obs"]');
+  var fechaVal = inpFecha ? inpFecha.value : '';
+  var obsVal   = inpObs   ? inpObs.value   : '';
+
+  // Actualizar PT local
+  if (!PT[clave]) PT[clave] = {};
+  PT[clave].fechaPlanif = fechaVal;
+  PT[clave].obs         = obsVal;
+
+  // Indicador visual
+  var claveClean = clave.replace(/[^a-zA-Z0-9]/g,'_');
+  var span = document.querySelector('.estado-guardado-'+claveClean);
+  if (span) { span.textContent = '...'; span.style.color = '#6b7280'; }
+
+  fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec", {
+    method: 'POST',
+    body: JSON.stringify({
+      patente:     pat,
+      consecutivo: cons,
+      rutina:      rut,
+      fechaPlanif: fechaVal,
+      obs:         obsVal,
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(j){
+    if (span) {
+      span.textContent = j.ok ? '✅' : '❌';
+      span.style.color = j.ok ? '#1D9E75' : '#C00000';
+      setTimeout(function(){ if(span) span.textContent=''; }, 3000);
+    }
+  })
+  .catch(function(e){
+    if (span) { span.textContent = '❌'; span.style.color = '#C00000'; }
+    console.error('guardarCampoPlan error:', e);
   });
 }
 
