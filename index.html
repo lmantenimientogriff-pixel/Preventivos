@@ -728,6 +728,7 @@ function renderPendientes(){
     if(FIL.m.length&&FIL.m.indexOf(r[2])<0)return false;
     if(FIL.ci.length&&FIL.ci.indexOf(r[4])<0)return false;
     if(FIL.gp.length&&FIL.gp.indexOf(r[5])<0)return false;
+    if(FIL.ru.length&&FIL.ru.indexOf(r[6])<0)return false;
     if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
     return true;
   }).sort(function(a,b){
