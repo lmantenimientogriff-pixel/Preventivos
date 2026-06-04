@@ -785,7 +785,8 @@ function renderPendientes(){
       var ptd=PT[clave]||{};
       h+='<td><input type="date" class="campo-plan" data-campo="fechaPlanif" data-clave="'+clave+'" data-pat="'+r[0]+'" data-cons="'+r[15]+'" data-rut="'+r[6]+'" value="'+(ptd.fechaPlanif||'')+'" onchange="guardarCampoPlan(this)"/></td>';
       h+='<td><input type="text" class="campo-plan" data-campo="obs" data-clave="'+clave+'" data-pat="'+r[0]+'" data-cons="'+r[15]+'" data-rut="'+r[6]+'" placeholder="Observaciones..." value="'+(ptd.obs||'')+'" onblur="guardarCampoPlan(this)"/></td>';
-      h+='<td style="text-align:center"><span class="estado-guardado-'+clave.replace(/[^a-zA-Z0-9]/g,\'_\')+'"></span></td>';
+      var clv2=clave.replace(/[^a-zA-Z0-9]/g,'_');
+      h+='<td style="text-align:center"><span id="eg-'+clv2+'"></span></td>';
       h+='</tr>';
     });
   }
@@ -826,7 +827,7 @@ function guardarCampoPlan(input) {
 
   // Indicador visual
   var claveClean = clave.replace(/[^a-zA-Z0-9]/g,'_');
-  var span = document.querySelector('.estado-guardado-'+claveClean);
+  var span = document.getElementById('eg-'+claveClean);
   if (span) { span.textContent = '...'; span.style.color = '#6b7280'; }
 
   fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec", {
