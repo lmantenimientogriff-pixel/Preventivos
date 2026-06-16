@@ -714,8 +714,22 @@ function tabla(){
     var ec=r[E]===0?'sg':r[E]===1?'sa':'sr';
     var et=r[E]===0?'A tiempo':r[E]===1?'Venc. margen':'Vencida';
     var trig='';
-    if(r[TT]==='d'&&r[DI]>0)trig='<span style="background:#fee2e2;color:#991b1b;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:700">'+r[DI]+'d</span>';
-    else if(r[TT]==='k'&&r[KI]>0)trig='<span style="background:#fef3c7;color:#92400e;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:700">+'+fmt(r[KI])+'km</span>';
+    var trigBg,trigCol,trigTxt;
+    if(r[E]===0){
+      trigBg='#dcfce7';trigCol='#166534';
+      if(r[TT]==='k')trigTxt='+'+fmt(r[KI])+'km';
+      else if(r[TT]==='d'&&r[KI]>0)trigTxt='+'+r[KI]+'d';
+      else trigTxt='';
+    } else if(r[E]===1){
+      trigBg='#fef9c3';trigCol='#854d0e';
+      if(r[TT]==='k')trigTxt='-'+fmt(r[KI])+'km';
+      else trigTxt='-'+r[KI]+'d';
+    } else {
+      trigBg='#fee2e2';trigCol='#991b1b';
+      if(r[TT]==='k')trigTxt='-'+fmt(r[KI])+'km';
+      else trigTxt='-'+r[KI]+'d';
+    }
+    if(trigTxt)trig='<span style="background:'+trigBg+';color:'+trigCol+';font-size:10px;padding:1px 6px;border-radius:4px;font-weight:700">'+trigTxt+'</span>';
     var ta=r[TA];if(ta.length>38)ta=ta.substring(0,38)+'...';
     h+='<tr>';
     h+='<td style="color:#6b7280">'+(i+1)+'</td>';
