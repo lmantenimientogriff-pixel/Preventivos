@@ -423,12 +423,13 @@ function poblarFecha(){
 }
 
 function buildOpts(){
-  var m={e:{},m:{},ti:{},ce:{},ru:{},ci:{},gp:{},gs:{}};
+  var m={e:{},m:{},ti:{},ce:{},ru:{},ci:{},gp:{},gs:{},ta:{}};
   D.forEach(function(r){
     m.e[r[E]===0?'A tiempo':r[E]===1?'Vencida en margen':'Vencida fuera de margen']=1;
     if(r[MA])m.m[r[MA]]=1;if(r[TI])m.ti[r[TI]]=1;if(r[CE])m.ce[r[CE]]=1;
     if(r[RU])m.ru[r[RU]]=1;if(r[CI])m.ci[r[CI]]=1;
     if(r[GP])m.gp[r[GP]]=1;if(r[GS])m.gs[r[GS]]=1;
+    if(r[TA])m.ta[r[TA]]=1;
   });
   for(var k in m)OPTS[k]=Object.keys(m[k]).sort();
   poblarFecha();
