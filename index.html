@@ -152,6 +152,7 @@ tbody tr:hover td{background:#fef9f9}
     <div class="fg" id="dw5"></div>
     <div class="fg" id="dw6"></div>
     <div class="fg" id="dw7"></div>
+    <div class="fg" id="dw8"></div>
     <div class="fg" style="flex-direction:row;align-items:center;gap:4px">
       <select class="fi" id="f-desde" style="width:108px;font-size:11px">
         <option value="">Desde mes</option>
@@ -374,7 +375,7 @@ fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqd
   document.getElementById("gfl").style.display="none";
 
 var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
-var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],v:'',desde:'',hasta:''};
+var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],ta:[],v:'',desde:'',hasta:''};
 var OPTS={};
 var DDCFG=[
   {w:'dw0',l:'Estado',   k:'e'},
@@ -384,7 +385,8 @@ var DDCFG=[
   {w:'dw4',l:'Rutina',   k:'ru'},
   {w:'dw5',l:'Ciudad',   k:'ci'},
   {w:'dw6',l:'Grupo Primario',   k:'gp'},
-  {w:'dw7',l:'Grupo Secundario', k:'gs'}
+  {w:'dw7',l:'Grupo Secundario', k:'gs'},
+  {w:'dw8',l:'Tarea',           k:'ta'}
 ];
 
 document.getElementById('fh').textContent=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
@@ -398,6 +400,7 @@ function gf(r,k){
   if(k==='m')return r[MA];if(k==='ti')return r[TI];if(k==='ce')return r[CE];
   if(k==='ru')return r[RU];if(k==='ci')return r[CI];
   if(k==='gp')return r[GP];if(k==='gs')return r[GS];
+  if(k==='ta')return r[TA];
   return '';
 }
 
@@ -480,7 +483,7 @@ document.addEventListener('click',cdd);
 
 document.getElementById('fv').addEventListener('input',function(e){FIL.v=e.target.value.toLowerCase();go();});
 document.getElementById('lbtn').addEventListener('click',function(){
-  FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],v:'',desde:'',hasta:''};
+  FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],ta:[],v:'',desde:'',hasta:''};
   document.getElementById('fv').value='';
   document.getElementById('f-desde').value='';
   document.getElementById('f-hasta').value='';
@@ -490,7 +493,7 @@ document.getElementById('lbtn').addEventListener('click',function(){
 
 function go(){
   DATA=D.filter(function(r){
-    var ks=['e','m','ti','ce','ru','ci','gp','gs'];
+    var ks=['e','m','ti','ce','ru','ci','gp','gs','ta'];
     for(var i=0;i<ks.length;i++){if(FIL[ks[i]].length&&FIL[ks[i]].indexOf(gf(r,ks[i]))<0)return false;}
     if(FIL.v&&r[V].toLowerCase().indexOf(FIL.v)<0)return false;
     if(FIL.desde&&r[MK]&&r[MK]<FIL.desde)return false;
