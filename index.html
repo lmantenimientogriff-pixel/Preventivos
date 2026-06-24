@@ -228,6 +228,7 @@ tbody tr:hover td{background:#fef9f9}
     <button class="tb" data-t="d">Detalle OT</button>
     <button class="tb" data-t="u">Unidades Fuera Margen</button>
     <button class="tb" data-t="p">Plan de Mantenimiento</button>
+    <button class="tb" data-t="im">Implementación Preventivos</button>
   </div>
   <div id="tc">
     <div class="tp act" id="tp-g">
@@ -299,6 +300,10 @@ tbody tr:hover td{background:#fef9f9}
         </tr></thead><tbody id="tbody-um"></tbody></table>
       </div>
     </div>
+    <div class="tp" id="tp-im">
+      <div class="stit">Implementaci&oacute;n de Preventivos &mdash; Rutinas y Trabajos por Unidad</div>
+      <div id="impl-cont"><p style="color:#6b7280;text-align:center;padding:24px">Seleccion&aacute; el tab para cargar</p></div>
+    </div>
     <div class="tp" id="tp-p">
       <div class="stit">Plan de Mantenimiento &mdash; Consolidado por Veh&iacute;culo y Rutina</div>
       <div id="pend-cont"><p style="color:#6b7280;text-align:center;padding:24px">Seleccion&aacute; el tab Pendientes para cargar</p></div>
@@ -314,6 +319,173 @@ var UM=[];
 var DATA=[];
 var P=[];
 var PT={};
+var IMP={items:[],guardado:{}};
+
+function renderImpl() {
+  var cont = document.getElementById('impl-cont');
+  if (!cont) return;
+
+  var items    = IMP.items    || [];
+  var guardado = IMP.guardado || {};
+
+  // Aplicar filtros activos
+  var fil = items.filter(function(r) {
+    if (FIL.ce.length && FIL.ce.indexOf(r.centro) < 0) return false;
+    if (FIL.m.length  && FIL.m.indexOf(r.marca)   < 0) return false;
+    if (FIL.ti.length && FIL.ti.indexOf(r.tipo)    < 0) return false;
+    if (FIL.ci.length && FIL.ci.indexOf(r.ciudad)  < 0) return false;
+    if (FIL.v && r.patente.toLowerCase().indexOf(FIL.v.toLowerCase()) < 0) return false;
+    return true;
+  });
+
+  // Calcular KPI — solo RUTINA entra en el cálculo
+  var totalRutinas  = fil.filter(function(r){ return r.tipoItem === 'RUTINA'; }).length;
+  var rutinasOk     = fil.filter(function(r){
+    if (r.tipoItem !== 'RUTINA') return false;
+    var g = guardado[r.patente + '||' + r.item] || {};
+    return g.secActual && g.secCorrecta && g.secActual.trim() === g.secCorrecta.trim();
+  }).length;
+  var pctImpl = totalRutinas > 0 ? Math.round(rutinasOk / totalRutinas * 100) : 0;
+  var colPct  = pctImpl >= 95 ? 'var(--G)' : pctImpl >= 80 ? 'var(--A)' : 'var(--R)';
+
+  // KPIs
+  var h = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">';
+  h += '<div class="kc" style="border-top:4px solid var(--GT)"><div class="kl">TOTAL ÍTEMS</div><div class="kv">'+fil.length+'</div><div style="font-size:11px;color:var(--GT)">rutinas + trabajos</div></div>';
+  h += '<div class="kc" style="border-top:4px solid var(--GT)"><div class="kl">RUTINAS</div><div class="kv">'+totalRutinas+'</div></div>';
+  h += '<div class="kc" style="border-top:4px solid '+colPct+'"><div class="kl">% IMPLEMENTACIÓN</div><div class="kv" style="color:'+colPct+'">'+pctImpl+'%</div><div style="font-size:11px;color:var(--GT)">sec. actual = sec. correcta</div></div>';
+  h += '<div class="kc" style="border-top:4px solid var(--G)"><div class="kl">IMPLEMENTADAS</div><div class="kv" style="color:var(--G)">'+rutinasOk+'</div></div>';
+  h += '<div class="kc" style="border-top:4px solid var(--R)"><div class="kl">SIN IMPLEMENTAR</div><div class="kv" style="color:var(--R)">'+(totalRutinas - rutinasOk)+'</div></div>';
+  h += '</div>';
+
+  // Tabla
+  h += '<div style="overflow-x:auto"><table class="dt"><thead><tr>';
+  ['Vehículo','Tipo','Marca','Centro','Ítem','Tipo Ítem','Sec. Actual','Sec. Correcta','Estado','Observaciones',''].forEach(function(c){
+    h += '<th>'+c+'</th>';
+  });
+  h += '</tr></thead><tbody>';
+
+  if (!fil.length) {
+    h += '<tr><td colspan="11" style="text-align:center;color:#6b7280;padding:24px">Sin datos</td></tr>';
+  } else {
+    fil.forEach(function(r) {
+      var clave = r.patente + '||' + r.item;
+      var g     = guardado[clave] || {};
+      var secA  = g.secActual    || '';
+      var secC  = g.secCorrecta  || '';
+      var obsV  = g.obs          || '';
+      var esRut = r.tipoItem === 'RUTINA';
+
+      // Semáforo — solo rutinas
+      var semaforo = '';
+      if (esRut) {
+        var ok = secA && secC && secA.trim() === secC.trim();
+        semaforo = ok
+          ? '<span style="color:var(--G);font-size:16px">●</span>'
+          : '<span style="color:var(--R);font-size:16px">●</span>';
+      }
+
+      var clvId = clave.replace(/[^a-zA-Z0-9]/g,'_');
+      var bg    = esRut ? '' : 'background:rgba(239,159,39,0.04)';
+
+      h += '<tr style="'+bg+'">';
+      h += '<td style="font-weight:700">'+r.patente+'</td>';
+      h += '<td style="font-size:11px">'+r.tipo+'</td>';
+      h += '<td>'+r.marca+'</td>';
+      h += '<td style="font-size:11px">'+r.centro+'</td>';
+      h += '<td style="font-weight:'+(esRut?'600':'400')+';color:'+(esRut?'inherit':'var(--A)')+'">'+r.item+'</td>';
+      h += '<td style="text-align:center"><span style="font-size:10px;padding:1px 7px;border-radius:4px;font-weight:700;background:'+(esRut?'#dbeafe':'#fef3c7')+';color:'+(esRut?'#1e40af':'#92400e')+'">'+r.tipoItem+'</span></td>';
+      // Sec. Actual — editable solo para RUTINA
+      if (esRut) {
+        h += '<td><input type="text" class="campo-plan" placeholder="Ej: 1" '
+           + 'data-impl="secActual" data-clave="'+clave+'" data-pat="'+r.patente+'" '
+           + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
+           + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="RUTINA" '
+           + 'value="'+secA+'" onblur="guardarImpl(this)"/></td>';
+        h += '<td><input type="text" class="campo-plan" placeholder="Ej: 1" '
+           + 'data-impl="secCorrecta" data-clave="'+clave+'" data-pat="'+r.patente+'" '
+           + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
+           + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="RUTINA" '
+           + 'value="'+secC+'" onblur="guardarImpl(this)"/></td>';
+      } else {
+        h += '<td style="text-align:center;color:#9ca3af">—</td>';
+        h += '<td style="text-align:center;color:#9ca3af">—</td>';
+      }
+      h += '<td style="text-align:center">'+semaforo+'</td>';
+      h += '<td><input type="text" class="campo-plan" placeholder="Observaciones..." '
+         + 'data-impl="obs" data-clave="'+clave+'" data-pat="'+r.patente+'" '
+         + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
+         + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="'+r.tipoItem+'" '
+         + 'value="'+obsV+'" onblur="guardarImpl(this)"/></td>';
+      h += '<td style="text-align:center"><span id="egi-'+clvId+'"></span></td>';
+      h += '</tr>';
+    });
+  }
+  h += '</tbody></table></div>';
+  cont.innerHTML = h;
+}
+
+function guardarImpl(input) {
+  var clave    = input.dataset.clave;
+  var pat      = input.dataset.pat;
+  var item     = input.dataset.item;
+  var tipoItem = input.dataset.tipoitem;
+  var tipo     = input.dataset.tipo;
+  var marca    = input.dataset.marca;
+  var centro   = input.dataset.centro;
+  var ciudad   = input.dataset.ciudad || '';
+
+  var fila     = input.closest('tr');
+  var inpSecA  = fila.querySelector('[data-impl="secActual"]');
+  var inpSecC  = fila.querySelector('[data-impl="secCorrecta"]');
+  var inpObs   = fila.querySelector('[data-impl="obs"]');
+
+  var secActual   = inpSecA  ? inpSecA.value.trim()  : '';
+  var secCorrecta = inpSecC  ? inpSecC.value.trim()  : '';
+  var obs         = inpObs   ? inpObs.value.trim()   : '';
+
+  // Actualizar IMP.guardado local
+  if (!IMP.guardado) IMP.guardado = {};
+  IMP.guardado[clave] = { secActual: secActual, secCorrecta: secCorrecta, obs: obs };
+
+  // Actualizar semáforo en la fila
+  if (tipoItem === 'RUTINA') {
+    var ok  = secActual && secCorrecta && secActual === secCorrecta;
+    var sem = fila.querySelector('td:nth-child(9) span');
+    if (sem) { sem.style.color = ok ? 'var(--G)' : 'var(--R)'; }
+  }
+
+  var clvId = clave.replace(/[^a-zA-Z0-9]/g,'_');
+  var span  = document.getElementById('egi-' + clvId);
+  if (span) { span.textContent = '...'; span.style.color = '#6b7280'; }
+
+  fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec", {
+    method: 'POST',
+    body: JSON.stringify({
+      accion:      'impl',
+      patente:     pat,
+      tipo:        tipo,
+      marca:       marca,
+      centro:      centro,
+      ciudad:      ciudad,
+      item:        item,
+      tipoItem:    tipoItem,
+      secActual:   secActual,
+      secCorrecta: secCorrecta,
+      obs:         obs,
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(j){
+    if (span) {
+      span.textContent = j.ok ? '✅' : '❌';
+      span.style.color = j.ok ? 'var(--G)' : 'var(--R)';
+      setTimeout(function(){ if(span) span.textContent = ''; }, 3000);
+    }
+  })
+  .catch(function(e){
+    if (span) { span.textContent = '❌'; span.style.color = 'var(--R)'; }
+  });
+}
 
 function guardarCampoPlan(input) {
   var clave   = input.dataset.clave;
@@ -371,6 +543,7 @@ fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqd
   UM=j.UM||[];
   P=j.P||[];
   PT=j.PT||{};
+  IMP=j.IMP||{items:[],guardado:{}};
   DATA=D.slice();
   document.getElementById("gfl").style.display="none";
 
@@ -504,6 +677,7 @@ function go(){
   rtags();kpis();donut();bars();centros();tend('cv1',220);tend('cv2',300);tendtbl();heatmap();tabla();tablaUM();
   var tabActivo=document.querySelector('.tb.act');
   if(tabActivo&&tabActivo.dataset.t==='p')renderPendientes();
+  if(tabActivo&&tabActivo.dataset.t==='im')renderImpl();
 }
 
 function rtags(){
@@ -798,6 +972,7 @@ document.querySelectorAll('.tb').forEach(function(btn){
     btn.classList.add('act');
     document.getElementById('tp-'+btn.dataset.t).classList.add('act');
     if(btn.dataset.t==='p'){renderPendientes();}
+    if(btn.dataset.t==='im'){renderImpl();}
     if(btn.dataset.t==='g'||btn.dataset.t==='t'){
       setTimeout(function(){tend('cv1',220);tend('cv2',300);},60);
     }
