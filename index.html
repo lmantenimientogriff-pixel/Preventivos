@@ -328,6 +328,12 @@ function renderImpl() {
   var items    = IMP.items    || [];
   var guardado = IMP.guardado || {};
 
+  // Debug: verificar que llegaron datos
+  if (!items.length) {
+    cont.innerHTML = '<div style="padding:24px;color:#6b7280;text-align:center">'+'<p>Sin datos en IMP (' + items.length + ' ítems)</p>'+'<p style="font-size:11px;margin-top:8px">Verificá que el Apps Script esté reimplementado con la última versión.</p>'+'</div>';
+    return;
+  }
+
   // Aplicar filtros activos
   var fil = items.filter(function(r) {
     if (FIL.ce.length && FIL.ce.indexOf(r.centro) < 0) return false;
