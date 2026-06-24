@@ -320,6 +320,9 @@ var DATA=[];
 var P=[];
 var PT={};
 var IMP={items:[],guardado:{}};
+var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],ta:[],v:'',desde:'',hasta:''};
+var OPTS={};
+var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
 
 function renderImpl() {
   var cont = document.getElementById('impl-cont');
@@ -553,9 +556,7 @@ fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqd
   DATA=D.slice();
   document.getElementById("gfl").style.display="none";
 
-var E=0,V=1,TI=2,MA=3,CE=4,CI=5,TA=6,RU=7,OT=8,FE=9,MK=10,TT=11,GP=12,GS=13,DI=14,KI=15;
-var FIL={e:[],m:[],ti:[],ce:[],ru:[],ci:[],gp:[],gs:[],ta:[],v:'',desde:'',hasta:''};
-var OPTS={};
+// FIL, OPTS y constantes declaradas globalmente
 var DDCFG=[
   {w:'dw0',l:'Estado',   k:'e'},
   {w:'dw1',l:'Marca',    k:'m'},
