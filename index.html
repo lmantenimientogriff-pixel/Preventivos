@@ -368,7 +368,7 @@ function renderImpl() {
 
   // Tabla
   h += '<div style="overflow-x:auto"><table class="dt"><thead><tr>';
-  ['Vehículo','Tipo','Marca','Centro','Ítem','Tipo Ítem','Sec. Actual','Sec. Correcta','Estado','Observaciones',''].forEach(function(c){
+  ['Vehículo','Tipo','Marca','Centro','Ítem','Tipo Ítem','Sec. Actual','Sec. Correcta','Semáforo','Observaciones','Estado Impl.',''].forEach(function(c){
     h += '<th>'+c+'</th>';
   });
   h += '</tr></thead><tbody>';
@@ -425,6 +425,17 @@ function renderImpl() {
          + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
          + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="'+r.tipoItem+'" '
          + 'value="'+obsV+'" onblur="guardarImpl(this)"/></td>';
+      var estV = g.estado || 'Pendiente';
+      var estBg = estV === 'Realizado' ? 'var(--G)' : 'var(--A)';
+      h += '<td><select class="campo-plan" '
+         + 'data-impl="estado" data-clave="'+clave+'" data-pat="'+r.patente+'" '
+         + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
+         + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="'+r.tipoItem+'" '
+         + 'onchange="guardarImpl(this)" '
+         + 'style="font-weight:700;color:'+estBg+'">';
+      h += '<option value="Pendiente"'+(estV==='Pendiente'?' selected':'')+'>Pendiente</option>';
+      h += '<option value="Realizado"'+(estV==='Realizado'?' selected':'')+'>Realizado</option>';
+      h += '</select></td>';
       h += '<td style="text-align:center"><span id="egi-'+clvId+'"></span></td>';
       h += '</tr>';
     });
@@ -448,19 +459,25 @@ function guardarImpl(input) {
   var inpSecC  = fila.querySelector('[data-impl="secCorrecta"]');
   var inpObs   = fila.querySelector('[data-impl="obs"]');
 
+  var inpEst      = fila.querySelector('[data-impl="estado"]');
   var secActual   = inpSecA  ? inpSecA.value.trim()  : '';
   var secCorrecta = inpSecC  ? inpSecC.value.trim()  : '';
   var obs         = inpObs   ? inpObs.value.trim()   : '';
+  var estado      = inpEst   ? inpEst.value.trim()   : 'Pendiente';
 
   // Actualizar IMP.guardado local
   if (!IMP.guardado) IMP.guardado = {};
-  IMP.guardado[clave] = { secActual: secActual, secCorrecta: secCorrecta, obs: obs };
+  IMP.guardado[clave] = { secActual: secActual, secCorrecta: secCorrecta, obs: obs, estado: estado };
 
   // Actualizar semáforo en la fila
   if (tipoItem === 'RUTINA') {
     var ok  = secActual && secCorrecta && secActual === secCorrecta;
     var sem = fila.querySelector('td:nth-child(9) span');
     if (sem) { sem.style.color = ok ? 'var(--G)' : 'var(--R)'; }
+  }
+  // Actualizar color del select de estado
+  if (inpEst) {
+    inpEst.style.color = estado === 'Realizado' ? 'var(--G)' : 'var(--A)';
   }
 
   var clvId = clave.replace(/[^a-zA-Z0-9]/g,'_');
@@ -481,6 +498,7 @@ function guardarImpl(input) {
       secActual:   secActual,
       secCorrecta: secCorrecta,
       obs:         obs,
+      estado:      estado,
     })
   })
   .then(function(r){ return r.json(); })
