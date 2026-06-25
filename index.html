@@ -407,12 +407,12 @@ function renderImpl() {
       h += '<td style="text-align:center"><span style="font-size:10px;padding:1px 7px;border-radius:4px;font-weight:700;background:'+(esRut?'#dbeafe':'#fef3c7')+';color:'+(esRut?'#1e40af':'#92400e')+'">'+r.tipoItem+'</span></td>';
       // Sec. Actual — editable solo para RUTINA
       if (esRut) {
-        h += '<td><input type="text" class="campo-plan" placeholder="Ej: 1" '
+        h += '<td><input type="text" class="campo-plan" style="min-width:200px" placeholder="Ej: 1" '
            + 'data-impl="secActual" data-clave="'+clave+'" data-pat="'+r.patente+'" '
            + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
            + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="RUTINA" '
            + 'value="'+secA+'" onblur="guardarImpl(this)"/></td>';
-        h += '<td><input type="text" class="campo-plan" placeholder="Ej: 1" '
+        h += '<td><input type="text" class="campo-plan" style="min-width:200px" placeholder="Ej: 1" '
            + 'data-impl="secCorrecta" data-clave="'+clave+'" data-pat="'+r.patente+'" '
            + 'data-tipo="'+r.tipo+'" data-marca="'+r.marca+'" data-centro="'+r.centro+'" '
            + 'data-ciudad="'+r.ciudad+'" data-item="'+r.item+'" data-tipoitem="RUTINA" '
