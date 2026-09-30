@@ -131,7 +131,6 @@ tbody tr:hover td{background:#fef9f9}
 .gfl-sp{width:40px;height:40px;border:3px solid #333;border-top:3px solid #C00000;border-radius:50%;animation:gflsp .8s linear infinite}
 @keyframes gflsp{to{transform:rotate(360deg)}}
 
-/* CALENDARIO PLANIFICACION */
 .cal-nav-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .nav-btn{background:#fff;border:1px solid var(--BO);border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
 .nav-btn:hover{background:var(--BG)}
@@ -144,9 +143,7 @@ tbody tr:hover td{background:#fef9f9}
 .cal-day.es-hoy .cal-dn{color:var(--B)}
 .cal-dn{font-size:12px;font-weight:700;color:#374151;margin-bottom:5px}
 .badge{font-size:10px;font-weight:700;border-radius:3px;padding:1px 5px;display:inline-block;margin:1px 0}
-.b-v{background:#fee2e2;color:#991b1b}
-.b-p{background:#fef9c3;color:#854d0e}
-.b-o{background:#dcfce7;color:#166534}
+.b-v{background:#fee2e2;color:#991b1b}.b-p{background:#fef9c3;color:#854d0e}.b-o{background:#dcfce7;color:#166534}
 .week-wrap{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .wday{background:#fff;border:1px solid var(--BO);border-radius:6px;padding:8px;min-height:140px}
 .wday.es-hoy{border-color:var(--B);border-width:2px}
@@ -359,13 +356,13 @@ tbody tr:hover td{background:#fef9f9}
       </div>
     </div>
     <div class="tp" id="tp-pl">
-      <div class="stit">Planificaci&oacute;n de Preventivos &mdash; Calendario</div>
+      <div class="stit">Planificaci&oacute;n de Preventivos</div>
       <div style="display:flex;align-items:center;gap:10px;padding:10px 0 14px;flex-wrap:wrap">
         <span style="font-size:11px;color:var(--GT);font-weight:600">Vista:</span>
-        <button class="btn btn-act" id="pl-btn-mes"    onclick="plVista('mes')"    style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--N);color:#fff">&#128197; Mes</button>
-        <button class="btn"         id="pl-btn-semana" onclick="plVista('semana')" style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128198; Semana</button>
-        <button class="btn"         id="pl-btn-dia"    onclick="plVista('dia')"    style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128203; D&iacute;a</button>
-        <button style="padding:4px 12px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--R);color:#fff;font-weight:700" onclick="plHoy()">Hoy</button>
+        <button id="pl-btn-mes"    onclick="plVista('mes')"    style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--N);color:#fff">&#128197; Mes</button>
+        <button id="pl-btn-semana" onclick="plVista('semana')" style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128198; Semana</button>
+        <button id="pl-btn-dia"    onclick="plVista('dia')"    style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128203; D&iacute;a</button>
+        <button onclick="plHoy()"  style="padding:4px 12px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--R);color:#fff;font-weight:700">Hoy</button>
       </div>
       <div id="pl-kpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
       <div id="pl-vista-mes"></div>
@@ -1204,8 +1201,8 @@ function cargarTareasOT(cons, patente) {
     });
 }
 
-// ── PLANIFICACIÓN DE PREVENTIVOS ─────────────────────────────
-// Colores: cod=0 VERDE (por vencer), cod=1 AMARILLO (vencido <=15d/<=1000km/<=5000km CUYO), cod=2 ROJO (fuera margen)
+
+// ── PLANIFICACIÓN ────────────────────────────────────────────
 function plHoy(){PL_cursor=new Date();if(PL_vista==='mes')PL_cursor.setDate(1);plRender();}
 
 function plVista(v){
@@ -1244,19 +1241,12 @@ function plDiasDiff(f){
 function plToISO(d){return d?d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0'):'';}
 function plToDDMM(d){return d?(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0')+'/'+d.getFullYear():'';}
 
-// CLASIFICACION POR MARGEN usando r[17] del array P
-// cod=0 VERDE por vencer / a tiempo
-// cod=1 AMARILLO vencido en margen (<=15d / <=1000km / <=5000km CUYO-SHELL)
-// cod=2 ROJO vencido fuera de margen
+// cod=0 VERDE (por vencer) | cod=1 AMARILLO (en margen <=15d/<=1000km/<=5000km CUYO) | cod=2 ROJO (fuera margen)
 function plCls(r){
   var cod=r[17];
-  if(cod===2)return{col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v',bkl:'b-v'};
-  if(cod===1)return{col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p',bkl:'b-p'};
-  return           {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o',bkl:'b-o'};
-}
-
-function plDevTxt(r){
-  return r[9]||'';
+  if(cod===2)return{col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v'};
+  if(cod===1)return{col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p'};
+  return           {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o'};
 }
 
 function plFil(){
@@ -1271,7 +1261,6 @@ function plFil(){
 }
 
 function plRender(){
-  if(!document.getElementById('tp-pl'))return;
   if(!document.querySelector('[data-t="pl"].act'))return;
   plKpis();
   if(PL_vista==='mes')plMes();
@@ -1285,15 +1274,10 @@ function plKpis(){
   f.forEach(function(r){if(r[17]===2)fuera++;else if(r[17]===1)enMar++;else porVen++;});
   var el=document.getElementById('pl-kpis');if(!el)return;
   el.innerHTML=
-    plK(f.length,'Total','en cartera','var(--GT)')+
-    plK(fuera,'Fuera de margen','requieren atenci&oacute;n','var(--R)')+
-    plK(enMar,'En margen','dentro del proc.','var(--A)')+
-    plK(porVen,'Por vencer / Al d&iacute;a','dentro del plazo','var(--G)');
-}
-function plK(v,l,s,c){
-  return '<div class="kc" style="border-top:3px solid '+c+';min-width:110px;flex:1">'+
-    '<div class="kl">'+l+'</div><div class="kv" style="color:'+c+'">'+v+'</div>'+
-    '<div class="ks2">'+s+'</div></div>';
+    '<div class="kc" style="border-top:3px solid var(--GT);min-width:110px;flex:1"><div class="kl">Total</div><div class="kv">'+f.length+'</div><div class="ks2">en cartera</div></div>'+
+    '<div class="kc" style="border-top:3px solid var(--R);min-width:110px;flex:1"><div class="kl">Fuera de margen</div><div class="kv" style="color:var(--R)">'+fuera+'</div><div class="ks2">requieren atenci&oacute;n</div></div>'+
+    '<div class="kc" style="border-top:3px solid var(--A);min-width:110px;flex:1"><div class="kl">En margen</div><div class="kv" style="color:var(--A)">'+enMar+'</div><div class="ks2">dentro del procedimiento</div></div>'+
+    '<div class="kc" style="border-top:3px solid var(--G);min-width:110px;flex:1"><div class="kl">Por vencer / Al d&iacute;a</div><div class="kv" style="color:var(--G)">'+porVen+'</div><div class="ks2">dentro del plazo</div></div>';
 }
 
 function plMes(){
@@ -1309,10 +1293,9 @@ function plMes(){
   var h='<div class="cal-nav-row">'+
     '<button class="nav-btn" onclick="plNav(-1)">&#8592;</button>'+
     '<span style="font-size:15px;font-weight:700;text-transform:capitalize;flex:1">'+nombre+
-    (vencFuera>0?' <span style="background:var(--R);color:#fff;font-size:10px;padding:1px 8px;border-radius:10px">'+vencFuera+' fuera margen</span>':'')+
-    '</span><button class="nav-btn" onclick="plNav(1)">&#8594;</button></div>'+
-    '<div class="cal-grid">';
-  ['Dom','Lun','Mar','Mi&eacute;','Jue','Vie','S&aacute;b'].forEach(function(d){h+='<div class="cal-dow">'+d+'</div>';});
+    (vencFuera>0?' <span style="background:var(--R);color:#fff;font-size:10px;padding:1px 8px;border-radius:10px">'+vencFuera+' fuera</span>':'')+
+    '</span><button class="nav-btn" onclick="plNav(1)">&#8594;</button></div><div class="cal-grid">';
+  ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'].forEach(function(d){h+='<div class="cal-dow">'+d+'</div>';});
   var prim=new Date(y,m,1).getDay(),ult=new Date(y,m+1,0).getDate();
   for(var i=0;i<prim;i++)h+='<div class="cal-day vacio"></div>';
   for(var d=1;d<=ult;d++){
@@ -1339,15 +1322,13 @@ function plSemana(){
   var h='<div class="cal-nav-row">'+
     '<button class="nav-btn" onclick="plNav(-7)">&#8592;</button>'+
     '<span style="font-size:15px;font-weight:700;flex:1">Semana del '+plToDDMM(lunes)+'</span>'+
-    '<button class="nav-btn" onclick="plNav(7)">&#8594;</button></div>'+
-    '<div class="week-wrap">';
-  var dows=['Lun','Mar','Mi&eacute;','Jue','Vie','S&aacute;b','Dom'];
+    '<button class="nav-btn" onclick="plNav(7)">&#8594;</button></div><div class="week-wrap">';
+  var dows=['Lun','Mar','Mie','Jue','Vie','Sab','Dom'];
   for(var i=0;i<7;i++){
     var d=new Date(lunes);d.setDate(lunes.getDate()+i);
     var esHoy=d.toDateString()===hoy.toDateString();
     var regs=f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.toDateString()===d.toDateString();});
-    h+='<div class="wday'+(esHoy?' es-hoy':'')+'">'+
-      '<div class="wd-label">'+dows[i]+'</div>'+
+    h+='<div class="wday'+(esHoy?' es-hoy':'')+'"><div class="wd-label">'+dows[i]+'</div>'+
       '<div class="wd-num">'+(d.getDate()+'').padStart(2,'0')+'</div>';
     if(!regs.length)h+='<div class="w-vacio">&mdash;</div>';
     else regs.forEach(function(r){
@@ -1375,9 +1356,9 @@ function plDia(){
     (esHoy?' &nbsp;<span style="background:var(--B);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px">HOY</span>':'')+
     '</span><button class="nav-btn" onclick="plNav(1)">&#8594;</button></div>';
   if(!regs.length){
-    h+='<div style="color:var(--GT);text-align:center;padding:32px">Sin preventivos para este d&iacute;a</div>';
+    h+='<div style="color:var(--GT);text-align:center;padding:32px">Sin preventivos para este dia</div>';
   }else{
-    h+='<div style="font-size:12px;color:var(--GT);margin-bottom:10px">'+regs.length+' preventivo'+(regs.length>1?'s':'')+' para este d&iacute;a</div>';
+    h+='<div style="font-size:12px;color:var(--GT);margin-bottom:10px">'+regs.length+' preventivo'+(regs.length>1?'s':'')+' para este dia</div>';
     regs.forEach(function(r){
       var clave=r[0]+'||'+r[15];
       var fe=plFechaEf(r);
@@ -1386,10 +1367,10 @@ function plDia(){
       h+='<div class="dia-item">'+
         '<div class="di-dot" style="background:'+cl.dot+'"></div>'+
         '<div class="di-pat">'+r[0]+'</div>'+
-        '<div class="di-rut">'+(r[6]||'Trabajo')+'<br><span class="di-cen">'+r[1]+' &middot; '+r[2]+'</span></div>'+
+        '<div><div class="di-rut">'+(r[6]||'Trabajo')+'</div><div class="di-cen">'+r[1]+' &middot; '+r[2]+'</div></div>'+
         '<div class="di-cen">'+r[3].split('-').slice(0,2).join('-')+'</div>'+
-        '<div class="di-dev" style="color:'+cl.col+'">'+plDevTxt(r)+'</div>'+
-        '<div class="di-fecha"><label>Fecha planificada'+(mod?' &#9999;&#65039;':'')+'</label>'+
+        '<div class="di-dev" style="color:'+cl.col+'">'+(r[9]||'')+'</div>'+
+        '<div class="di-fecha"><label>Fecha planif.'+(mod?' &#9999;':'')+'</label>'+
           '<input type="date" '+(mod?'class="mod"':'')+' data-clave="'+clave+'" value="'+plToISO(fe)+'" onchange="plCambiarFecha(this)">'+
         '</div></div>';
     });
@@ -1431,27 +1412,25 @@ function plLista(){
     (enMar>0?'&nbsp;<span style="background:var(--A)">'+enMar+' margen</span>':'')+
     (ok>0   ?'&nbsp;<span style="background:var(--G)">'+ok+' ok</span>':'')+
     '</div><div class="lista-grid">';
-  if(!regs.length){h+='<p style="color:var(--GT);font-size:12px">Sin preventivos para este per&iacute;odo</p>';}
-  else{
-    regs.forEach(function(r){
-      var clave=r[0]+'||'+r[15];
-      var fe=plFechaEf(r);
-      var cl=plCls(r);
-      var mod=!!PL_FMOD[clave];
-      h+='<div class="lista-card '+cl.lcls+'">'+
-        '<div class="lc-dot" style="background:'+cl.dot+'"></div>'+
-        '<div class="lc-body">'+
-          '<div class="lc-pat">'+r[0]+'</div>'+
-          '<div class="lc-rut">'+(r[6]||'Trabajo')+'</div>'+
-          '<div class="lc-cen">'+r[1]+' &middot; '+r[3].split('-').slice(0,2).join('-')+'</div>'+
-        '</div>'+
-        '<div class="lc-right">'+
-          '<div class="lc-fecha">'+plToDDMM(fe)+'</div>'+
-          '<div class="lc-dev" style="color:'+cl.col+'">'+plDevTxt(r)+'</div>'+
-          (mod?'<div class="lc-mod">&#9999;&#65039; mod.</div>':'')+
-        '</div></div>';
-    });
-  }
+  if(!regs.length){h+='<p style="color:var(--GT);font-size:12px">Sin preventivos para este periodo</p>';}
+  else regs.forEach(function(r){
+    var clave=r[0]+'||'+r[15];
+    var fe=plFechaEf(r);
+    var cl=plCls(r);
+    var mod=!!PL_FMOD[clave];
+    h+='<div class="lista-card '+cl.lcls+'">'+
+      '<div class="lc-dot" style="background:'+cl.dot+'"></div>'+
+      '<div class="lc-body">'+
+        '<div class="lc-pat">'+r[0]+'</div>'+
+        '<div class="lc-rut">'+(r[6]||'Trabajo')+'</div>'+
+        '<div class="lc-cen">'+r[1]+' &middot; '+r[3].split('-').slice(0,2).join('-')+'</div>'+
+      '</div>'+
+      '<div class="lc-right">'+
+        '<div class="lc-fecha">'+plToDDMM(fe)+'</div>'+
+        '<div class="lc-dev" style="color:'+cl.col+'">'+(r[9]||'')+'</div>'+
+        (mod?'<div class="lc-mod">mod.</div>':'')+
+      '</div></div>';
+  });
   h+='</div>';
   var el=document.getElementById('pl-lista');if(el)el.innerHTML=h;
 }
@@ -1460,13 +1439,12 @@ function plCambiarFecha(inp){
   var val=inp.value;if(!val)return;
   var p=val.split('-');
   PL_FMOD[inp.dataset.clave]=p[2]+'/'+p[1]+'/'+p[0];
-  fetch('https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec',{
-    method:'POST',
-    body:JSON.stringify({accion:'planFecha',
-      patente:inp.dataset.clave.split('||')[0],
-      consecutivo:inp.dataset.clave.split('||')[1],
-      fechaPlanif:PL_FMOD[inp.dataset.clave]})
-  }).catch(function(){});
+  fetch('https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec',{method:'POST',body:JSON.stringify({
+    accion:'planFecha',
+    patente:inp.dataset.clave.split('||')[0],
+    consecutivo:inp.dataset.clave.split('||')[1],
+    fechaPlanif:PL_FMOD[inp.dataset.clave]
+  })}).catch(function(){});
   plRender();
 }
 
