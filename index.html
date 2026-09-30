@@ -667,16 +667,24 @@ function plDiasDiff(f){
 function plToISO(d){ return d?d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0'):''; }
 function plToDDMM(d){ return d?(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0')+'/'+d.getFullYear():''; }
 
-function plClsReg(dd){
-  if(dd===null) return {col:'var(--GT)',dot:'var(--GT)',wcls:'wi-o',lcls:'lc-o'};
-  if(dd<0)  return {col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v'};
-  if(dd<=7) return {col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p'};
-  return       {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o'};
+function plClsReg(dd,cod){
+  if(cod===2) return {col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v',badge:'b-v'};
+  if(cod===1) return {col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p',badge:'b-p'};
+  if(cod===0){
+    if(dd!==null&&dd<0) return {col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v',badge:'b-v'};
+    return {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o',badge:'b-o'};
+  }
+  if(dd===null) return {col:'var(--GT)',dot:'var(--GT)',wcls:'wi-o',lcls:'lc-o',badge:'b-o'};
+  if(dd<0)  return {col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v',badge:'b-v'};
+  if(dd<=7) return {col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p',badge:'b-p'};
+  return       {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o',badge:'b-o'};
 }
 
-function plDevTxt(dd){
-  if(dd===null)return '—';
-  if(dd<0) return 'Vencido '+Math.abs(dd)+'d';
+function plDevTxt(dd,cod){
+  if(dd===null) return '—';
+  if(cod===2) return 'Fuera margen '+Math.abs(dd)+'d';
+  if(cod===1) return 'En margen '+Math.abs(dd)+'d';
+  if(dd<0)  return 'Vencido '+Math.abs(dd)+'d';
   if(dd===0) return 'Hoy';
   return 'Faltan '+dd+'d';
 }
@@ -703,20 +711,19 @@ function plRender(){
 }
 
 function plKpis(){
-  var f=plFil(),venc=0,p7=0,p30=0,ok=0;
+  var f=plFil(),fuera=0,enMar=0,porVen=0;
   f.forEach(function(r){
-    var d=plDiasDiff(plFechaEf(r));
-    if(d===null)return;
-    if(d<0)venc++; else if(d<=7)p7++; else if(d<=30)p30++; else ok++;
+    if(r[17]===2)fuera++;
+    else if(r[17]===1)enMar++;
+    else porVen++;
   });
   var el=document.getElementById('pl-kpis');
   if(!el)return;
   el.innerHTML=
     plK(f.length,'Total','en cartera','var(--GT)')+
-    plK(venc,'Vencidos','sin ejecutar','var(--R)')+
-    plK(p7,'Próx. 7d','urgentes','var(--A)')+
-    plK(p30,'Próx. 30d','en el mes','var(--B)')+
-    plK(ok,'Al día','> 30 días','var(--G)');
+    plK(fuera,'Fuera de margen','requieren atención','var(--R)')+
+    plK(enMar,'En margen','dentro del procedimiento','var(--A)')+
+    plK(porVen,'Por vencer / Al día','dentro del plazo','var(--G)');
 }
 function plK(v,l,s,c){
   return '<div class="kpi" style="border-top:3px solid '+c+';min-width:110px;flex:1">'+
@@ -734,7 +741,7 @@ function plMes(){
     if(!fe||fe.getFullYear()!==y||fe.getMonth()!==m)return;
     var k=fe.getDate(); if(!pm[k])pm[k]=[]; pm[k].push(r);
   });
-  var vencFuera=f.filter(function(r){return plDiasDiff(plFechaEf(r))<0;}).length;
+  var vencFuera=f.filter(function(r){return r[17]===2;}).length;
   var h='<div class="cal-nav-row">'+
     '<button class="nav-btn" onclick="plNav(-1)">&#8592;</button>'+
     '<span class="cal-title" style="text-transform:capitalize">'+nombre+
@@ -781,7 +788,7 @@ function plSemana(){
     if(!regs.length) h+='<div class="w-vacio">—</div>';
     else regs.forEach(function(r){
       var dd=plDiasDiff(plFechaEf(r));
-      var cl=plClsReg(dd);
+      var cl=plClsReg(dd,r[17]);
       h+='<div class="witem '+cl.wcls+'" onclick="plIrDia('+d.getFullYear()+','+d.getMonth()+','+d.getDate()+')">'+
         '<strong>'+r[0]+'</strong><br>'+(r[6]||'Trabajo')+'</div>';
     });
@@ -813,7 +820,7 @@ function plDia(){
       var clave=r[0]+'||'+r[15];
       var fe=plFechaEf(r);
       var dd=plDiasDiff(fe);
-      var cl=plClsReg(dd);
+      var cl=plClsReg(dd,r[17]);
       var mod=!!PL_FMOD[clave];
       h+='<div class="dia-item">'+
         '<div class="di-dot" style="background:'+cl.dot+'"></div>'+
@@ -854,9 +861,9 @@ function plLista(){
     if(da<0)return -1; if(db<0)return 1;
     return da-db;
   });
-  var venc=regs.filter(function(r){return plDiasDiff(plFechaEf(r))<0;}).length;
-  var prox=regs.filter(function(r){var d=plDiasDiff(plFechaEf(r));return d!==null&&d>=0&&d<=7;}).length;
-  var ok=regs.length-venc-prox;
+  var venc=regs.filter(function(r){return r[17]===2;}).length;
+  var prox=regs.filter(function(r){return r[17]===1;}).length;
+  var ok=regs.filter(function(r){return r[17]===0;}).length;
   var titulo=PL_vista==='mes'
     ? new Date(PL_cursor.getFullYear(),PL_cursor.getMonth(),1).toLocaleDateString('es-AR',{month:'long',year:'numeric'})
     : 'semana';
@@ -873,7 +880,7 @@ function plLista(){
       var clave=r[0]+'||'+r[15];
       var fe=plFechaEf(r);
       var dd=plDiasDiff(fe);
-      var cl=plClsReg(dd);
+      var cl=plClsReg(dd,r[17]);
       var mod=!!PL_FMOD[clave];
       h+='<div class="lista-card '+cl.lcls+'">'+
         '<div class="lc-dot" style="background:'+cl.dot+'"></div>'+
