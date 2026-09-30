@@ -130,6 +130,91 @@ tbody tr:hover td{background:#fef9f9}
 .tr-pend.sel{outline:2px solid #1A237E}
 .gfl-sp{width:40px;height:40px;border:3px solid #333;border-top:3px solid #C00000;border-radius:50%;animation:gflsp .8s linear infinite}
 @keyframes gflsp{to{transform:rotate(360deg)}}
+/* CALENDARIO MES */
+.cal-nav-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.nav-btn{background:#fff;border:1px solid var(--BO);border-radius:4px;
+         width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;
+         align-items:center;justify-content:center}
+.nav-btn:hover{background:var(--BG)}
+.cal-title{font-size:15px;font-weight:700;text-transform:capitalize;flex:1}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--GT);
+         padding:5px 0;text-transform:uppercase}
+.cal-day{background:#fff;border:1px solid var(--BO);border-radius:5px;
+         min-height:80px;padding:6px;cursor:pointer;transition:.1s}
+.cal-day:hover{border-color:var(--B);background:#f0f7ff}
+.cal-day.vacio{background:#fafafa;opacity:.4;cursor:default;min-height:80px}
+.cal-day.es-hoy{border-color:var(--B);border-width:2px}
+.cal-day.es-hoy .cal-dn{color:var(--B)}
+.cal-dn{font-size:12px;font-weight:700;color:#374151;margin-bottom:5px}
+.badge{font-size:10px;font-weight:700;border-radius:3px;padding:1px 5px;
+       display:inline-block;margin:1px 0}
+.b-v{background:#fee2e2;color:#991b1b}
+.b-p{background:#fef9c3;color:#854d0e}
+.b-o{background:#dcfce7;color:#166534}
+
+/* VISTA SEMANA */
+.week-wrap{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.wday{background:#fff;border:1px solid var(--BO);border-radius:6px;
+      padding:8px;min-height:200px}
+.wday.es-hoy{border-color:var(--B);border-width:2px}
+.wd-label{font-size:10px;font-weight:700;text-transform:uppercase;
+          color:var(--GT);text-align:center}
+.wd-num{font-size:18px;font-weight:700;text-align:center;margin:2px 0 8px}
+.wday.es-hoy .wd-num{color:var(--B)}
+.witem{font-size:11px;border-radius:3px;padding:3px 6px;margin:2px 0;
+       cursor:pointer;border-left:3px solid transparent;line-height:1.3}
+.wi-v{background:#fee2e2;border-color:#991b1b;color:#7f1d1d}
+.wi-p{background:#fef9c3;border-color:#b45309;color:#78350f}
+.wi-o{background:#dcfce7;border-color:#166534;color:#14532d}
+.w-vacio{font-size:11px;color:var(--BO);text-align:center;margin-top:8px}
+
+/* VISTA DÍA */
+.dia-header{font-size:14px;font-weight:700;margin-bottom:14px;
+            text-transform:capitalize;color:var(--N)}
+.dia-empty{color:var(--GT);text-align:center;padding:32px}
+.dia-item{background:#fff;border:1px solid var(--BO);border-radius:6px;
+          padding:12px 16px;margin-bottom:8px;display:grid;
+          grid-template-columns:10px 90px 1fr 1fr 120px 180px;
+          align-items:center;gap:12px}
+.dia-item:hover{border-color:var(--BO);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.di-dot{width:10px;height:10px;border-radius:50%}
+.di-pat{font-weight:700;font-size:13px}
+.di-rut{font-size:12px;color:var(--GT)}
+.di-cen{font-size:11px;color:var(--GT)}
+.di-dev{font-size:12px;font-weight:700;text-align:right}
+.di-fecha{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.di-fecha label{font-size:10px;color:var(--GT)}
+.di-fecha input{font-size:11px;padding:3px 7px;border:1px solid var(--BO);
+                border-radius:4px;font-family:var(--F);cursor:pointer}
+.di-fecha input:focus{outline:none;border-color:var(--G)}
+.di-fecha input.mod{border-color:var(--G);background:#f0fdf4;color:var(--G);font-weight:700}
+
+/* LISTADO DINÁMICO */
+.lista-wrap{padding:0 20px 24px}
+.lista-titulo{font-size:12px;font-weight:700;color:var(--GT);text-transform:uppercase;
+              letter-spacing:.5px;margin-bottom:10px;padding-top:16px;
+              border-top:1px solid var(--BO);display:flex;align-items:center;gap:8px}
+.lista-titulo span{background:var(--N);color:#fff;border-radius:10px;
+                   padding:1px 8px;font-size:11px}
+.lista-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.lista-card{background:#fff;border:1px solid var(--BO);border-radius:6px;
+            padding:10px 14px;display:flex;align-items:center;gap:10px;
+            border-left:4px solid var(--GT)}
+.lc-v{border-left-color:var(--R)}
+.lc-p{border-left-color:var(--A)}
+.lc-o{border-left-color:var(--G)}
+.lc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lc-body{flex:1;min-width:0}
+.lc-pat{font-weight:700;font-size:13px}
+.lc-rut{font-size:11px;color:var(--GT);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-cen{font-size:10px;color:var(--GT);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-right{text-align:right;flex-shrink:0}
+.lc-fecha{font-size:11px;color:var(--GT)}
+.lc-dev{font-size:12px;font-weight:700;margin-top:2px}
+.lc-mod{font-size:9px;color:var(--G);font-weight:700}
+
 </style>
 </head>
 <body>
@@ -231,6 +316,7 @@ tbody tr:hover td{background:#fef9f9}
     <button class="tb" data-t="u">Unidades Fuera Margen</button>
     <button class="tb" data-t="p">Plan de Mantenimiento</button>
     <button class="tb" data-t="im">Implementación Preventivos</button>
+    <button class="tb" data-t="pl">Planificación</button>
   </div>
   <div id="tc">
     <div class="tp act" id="tp-g">
@@ -301,6 +387,21 @@ tbody tr:hover td{background:#fef9f9}
           <th>Veces fuera margen</th><th>Max desvio</th><th>Ultima ocurrencia</th>
         </tr></thead><tbody id="tbody-um"></tbody></table>
       </div>
+    </div>
+    <div class="tp" id="tp-pl">
+      <div class="stit">Planificaci&oacute;n de Preventivos &mdash; Calendario</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0 14px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--GT);font-weight:600">Vista:</span>
+        <button class="btn btn-act" id="pl-btn-mes"    onclick="plVista('mes')"    style="padding:4px 12px;font-size:12px">📅 Mes</button>
+        <button class="btn"         id="pl-btn-semana" onclick="plVista('semana')" style="padding:4px 12px;font-size:12px">📆 Semana</button>
+        <button class="btn"         id="pl-btn-dia"    onclick="plVista('dia')"    style="padding:4px 12px;font-size:12px">📋 Día</button>
+        <button class="btn btn-prim" onclick="plHoy()" style="padding:4px 12px;font-size:12px">Hoy</button>
+      </div>
+      <div id="pl-kpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <div id="pl-vista-mes"></div>
+      <div id="pl-vista-semana" style="display:none"></div>
+      <div id="pl-vista-dia"    style="display:none"></div>
+      <div id="pl-lista"></div>
     </div>
     <div class="tp" id="tp-im">
       <div class="stit">Implementaci&oacute;n de Preventivos &mdash; Rutinas y Trabajos por Unidad</div>
@@ -516,6 +617,297 @@ function guardarImpl(input) {
   });
 }
 
+// ── PLANIFICACIÓN DE PREVENTIVOS ─────────────────────────────
+var PL_cursor = (function(){ var d=new Date(); d.setDate(1); return d; })();
+var PL_vista  = 'mes';
+var PL_FMOD   = {};
+
+function plHoy(){
+  PL_cursor = new Date();
+  if(PL_vista==='mes') PL_cursor.setDate(1);
+  plRender();
+}
+
+function plVista(v){
+  PL_vista = v;
+  ['mes','semana','dia'].forEach(function(x){
+    document.getElementById('pl-vista-'+x).style.display = x===v?'':'none';
+    var btn = document.getElementById('pl-btn-'+x);
+    if(btn) btn.className = 'btn'+(x===v?' btn-act':'');
+  });
+  var lista = document.getElementById('pl-lista');
+  if(lista) lista.style.display = v==='dia'?'none':'';
+  plRender();
+}
+
+function plNav(d){
+  if(PL_vista==='mes'){
+    PL_cursor = new Date(PL_cursor.getFullYear(), PL_cursor.getMonth()+(d>0?1:-1), 1);
+  } else {
+    PL_cursor.setDate(PL_cursor.getDate()+d);
+  }
+  plRender();
+}
+
+function plIrDia(y,m,d){ PL_cursor=new Date(y,m,d); plVista('dia'); }
+
+function plFechaEf(r){
+  var raw = PL_FMOD[r[0]+'||'+r[15]] || r[13];
+  if(!raw) return null;
+  var p=raw.split('/');
+  return p.length===3 ? new Date(+p[2],+p[1]-1,+p[0]) : null;
+}
+
+function plDiasDiff(f){
+  if(!f) return null;
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((new Date(f.getFullYear(),f.getMonth(),f.getDate())-hoy)/86400000);
+}
+
+function plToISO(d){ return d?d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0'):''; }
+function plToDDMM(d){ return d?(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0')+'/'+d.getFullYear():''; }
+
+function plClsReg(dd){
+  if(dd===null) return {col:'var(--GT)',dot:'var(--GT)',wcls:'wi-o',lcls:'lc-o'};
+  if(dd<0)  return {col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v'};
+  if(dd<=7) return {col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p'};
+  return       {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o'};
+}
+
+function plDevTxt(dd){
+  if(dd===null)return '—';
+  if(dd<0) return 'Vencido '+Math.abs(dd)+'d';
+  if(dd===0) return 'Hoy';
+  return 'Faltan '+dd+'d';
+}
+
+function plFil(){
+  return P.filter(function(r){
+    if(FIL.ce.length&&FIL.ce.indexOf(r[3])<0)return false;
+    if(FIL.ti.length&&FIL.ti.indexOf(r[1])<0)return false;
+    if(FIL.m.length &&FIL.m.indexOf(r[2])<0) return false;
+    if(FIL.ci.length&&FIL.ci.indexOf(r[4])<0)return false;
+    if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
+    return true;
+  });
+}
+
+function plRender(){
+  if(!document.getElementById('tp-pl')) return;
+  if(!document.querySelector('[data-t="pl"].act')) return;
+  plKpis();
+  if(PL_vista==='mes')    plMes();
+  if(PL_vista==='semana') plSemana();
+  if(PL_vista==='dia')    plDia();
+  if(PL_vista!=='dia')    plLista();
+}
+
+function plKpis(){
+  var f=plFil(),venc=0,p7=0,p30=0,ok=0;
+  f.forEach(function(r){
+    var d=plDiasDiff(plFechaEf(r));
+    if(d===null)return;
+    if(d<0)venc++; else if(d<=7)p7++; else if(d<=30)p30++; else ok++;
+  });
+  var el=document.getElementById('pl-kpis');
+  if(!el)return;
+  el.innerHTML=
+    plK(f.length,'Total','en cartera','var(--GT)')+
+    plK(venc,'Vencidos','sin ejecutar','var(--R)')+
+    plK(p7,'Próx. 7d','urgentes','var(--A)')+
+    plK(p30,'Próx. 30d','en el mes','var(--B)')+
+    plK(ok,'Al día','> 30 días','var(--G)');
+}
+function plK(v,l,s,c){
+  return '<div class="kpi" style="border-top:3px solid '+c+';min-width:110px;flex:1">'+
+    '<div class="kpi-l">'+l+'</div><div class="kpi-v" style="color:'+c+'">'+v+'</div>'+
+    '<div class="kpi-s">'+s+'</div></div>';
+}
+
+function plMes(){
+  var f=plFil(),hoy=new Date();
+  var y=PL_cursor.getFullYear(),m=PL_cursor.getMonth();
+  var nombre=new Date(y,m,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+  var pm={};
+  f.forEach(function(r){
+    var fe=plFechaEf(r);
+    if(!fe||fe.getFullYear()!==y||fe.getMonth()!==m)return;
+    var k=fe.getDate(); if(!pm[k])pm[k]=[]; pm[k].push(r);
+  });
+  var vencFuera=f.filter(function(r){return plDiasDiff(plFechaEf(r))<0;}).length;
+  var h='<div class="cal-nav-row">'+
+    '<button class="nav-btn" onclick="plNav(-1)">&#8592;</button>'+
+    '<span class="cal-title" style="text-transform:capitalize">'+nombre+
+    (vencFuera>0?' <span style="background:var(--R);color:#fff;font-size:10px;padding:1px 8px;border-radius:10px">'+vencFuera+' venc.</span>':'')+
+    '</span><button class="nav-btn" onclick="plNav(1)">&#8594;</button></div>'+
+    '<div class="cal-grid">';
+  ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(function(d){h+='<div class="cal-dow">'+d+'</div>';});
+  var prim=new Date(y,m,1).getDay(),ult=new Date(y,m+1,0).getDate();
+  for(var i=0;i<prim;i++)h+='<div class="cal-day vacio"></div>';
+  for(var d=1;d<=ult;d++){
+    var esHoy=(y===hoy.getFullYear()&&m===hoy.getMonth()&&d===hoy.getDate());
+    var regs=pm[d]||[];
+    var venc=regs.filter(function(r){return plDiasDiff(plFechaEf(r))<0;}).length;
+    var prox=regs.filter(function(r){var dd=plDiasDiff(plFechaEf(r));return dd!==null&&dd>=0&&dd<=7;}).length;
+    var ok=regs.length-venc-prox;
+    h+='<div class="cal-day'+(esHoy?' es-hoy':'')+'" onclick="plIrDia('+y+','+m+','+d+')">'+
+      '<div class="cal-dn">'+d+'</div>';
+    if(venc>0) h+='<span class="badge b-v">'+venc+' venc.</span><br>';
+    if(prox>0) h+='<span class="badge b-p">'+prox+' próx.</span><br>';
+    if(ok>0)   h+='<span class="badge b-o">'+ok+' ok</span>';
+    h+='</div>';
+  }
+  h+='</div>';
+  document.getElementById('pl-vista-mes').innerHTML=h;
+}
+
+function plSemana(){
+  var f=plFil(),hoy=new Date();
+  var lunes=new Date(PL_cursor);
+  lunes.setDate(PL_cursor.getDate()-((PL_cursor.getDay()+6)%7));
+  var h='<div class="cal-nav-row">'+
+    '<button class="nav-btn" onclick="plNav(-7)">&#8592;</button>'+
+    '<span class="cal-title">Semana del '+plToDDMM(lunes)+'</span>'+
+    '<button class="nav-btn" onclick="plNav(7)">&#8594;</button></div>'+
+    '<div class="week-wrap">';
+  var dows=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  for(var i=0;i<7;i++){
+    var d=new Date(lunes); d.setDate(lunes.getDate()+i);
+    var esHoy=d.toDateString()===hoy.toDateString();
+    var regs=f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.toDateString()===d.toDateString();});
+    h+='<div class="wday'+(esHoy?' es-hoy':'')+'">'+
+      '<div class="wd-label">'+dows[i]+'</div>'+
+      '<div class="wd-num">'+(d.getDate()+'').padStart(2,'0')+'</div>';
+    if(!regs.length) h+='<div class="w-vacio">—</div>';
+    else regs.forEach(function(r){
+      var dd=plDiasDiff(plFechaEf(r));
+      var cl=plClsReg(dd);
+      h+='<div class="witem '+cl.wcls+'" onclick="plIrDia('+d.getFullYear()+','+d.getMonth()+','+d.getDate()+')">'+
+        '<strong>'+r[0]+'</strong><br>'+(r[6]||'Trabajo')+'</div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  document.getElementById('pl-vista-semana').innerHTML=h;
+}
+
+function plDia(){
+  var f=plFil(),hoy=new Date();
+  var y=PL_cursor.getFullYear(),mo=PL_cursor.getMonth(),d=PL_cursor.getDate();
+  var nombre=PL_cursor.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  var esHoy=PL_cursor.toDateString()===hoy.toDateString();
+  var regs=f.filter(function(r){
+    var fe=plFechaEf(r);
+    return fe&&fe.getFullYear()===y&&fe.getMonth()===mo&&fe.getDate()===d;
+  });
+  var h='<div class="cal-nav-row">'+
+    '<button class="nav-btn" onclick="plNav(-1)">&#8592;</button>'+
+    '<span class="cal-title" style="text-transform:capitalize">'+nombre+
+    (esHoy?' &nbsp;<span style="background:var(--B);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px">HOY</span>':'')+
+    '</span><button class="nav-btn" onclick="plNav(1)">&#8594;</button></div>';
+  if(!regs.length){
+    h+='<div style="color:var(--GT);text-align:center;padding:32px">Sin preventivos para este día</div>';
+  } else {
+    h+='<div style="font-size:12px;color:var(--GT);margin-bottom:10px">'+regs.length+' preventivo'+(regs.length>1?'s':'')+' planificado'+(regs.length>1?'s':'')+' para este día</div>';
+    regs.forEach(function(r){
+      var clave=r[0]+'||'+r[15];
+      var fe=plFechaEf(r);
+      var dd=plDiasDiff(fe);
+      var cl=plClsReg(dd);
+      var mod=!!PL_FMOD[clave];
+      h+='<div class="dia-item">'+
+        '<div class="di-dot" style="background:'+cl.dot+'"></div>'+
+        '<div class="di-pat">'+r[0]+'</div>'+
+        '<div class="di-rut">'+(r[6]||'Trabajo')+'<br><span class="di-cen">'+r[1]+' · '+r[2]+'</span></div>'+
+        '<div class="di-cen">'+r[3].split('-').slice(0,2).join('-')+'</div>'+
+        '<div class="di-dev" style="color:'+cl.col+'">'+plDevTxt(dd)+'</div>'+
+        '<div class="di-fecha"><label>Fecha planificada'+(mod?' ✏️':'')+'</label>'+
+          '<input type="date" '+(mod?'class="mod"':'')+' data-clave="'+clave+'" value="'+plToISO(fe)+'" onchange="plCambiarFecha(this)">'+
+        '</div></div>';
+    });
+  }
+  document.getElementById('pl-vista-dia').innerHTML=h;
+}
+
+function plLista(){
+  var f=plFil(),regs=[];
+  if(PL_vista==='mes'){
+    var y=PL_cursor.getFullYear(),m=PL_cursor.getMonth();
+    regs=f.filter(function(r){
+      var fe=plFechaEf(r); if(!fe)return false;
+      if(plDiasDiff(fe)<0)return true;
+      return fe.getFullYear()===y&&fe.getMonth()===m;
+    });
+  } else {
+    var lunes=new Date(PL_cursor);
+    lunes.setDate(PL_cursor.getDate()-((PL_cursor.getDay()+6)%7));
+    var dom=new Date(lunes); dom.setDate(lunes.getDate()+6);
+    regs=f.filter(function(r){
+      var fe=plFechaEf(r); if(!fe)return false;
+      if(plDiasDiff(fe)<0)return true;
+      return fe>=lunes&&fe<=dom;
+    });
+  }
+  regs.sort(function(a,b){
+    var da=plDiasDiff(plFechaEf(a))||0,db=plDiasDiff(plFechaEf(b))||0;
+    if(da<0&&db<0)return da-db;
+    if(da<0)return -1; if(db<0)return 1;
+    return da-db;
+  });
+  var venc=regs.filter(function(r){return plDiasDiff(plFechaEf(r))<0;}).length;
+  var prox=regs.filter(function(r){var d=plDiasDiff(plFechaEf(r));return d!==null&&d>=0&&d<=7;}).length;
+  var ok=regs.length-venc-prox;
+  var titulo=PL_vista==='mes'
+    ? new Date(PL_cursor.getFullYear(),PL_cursor.getMonth(),1).toLocaleDateString('es-AR',{month:'long',year:'numeric'})
+    : 'semana';
+  var h='<div class="lista-titulo" style="text-transform:capitalize">'+titulo+
+    ' <span>'+regs.length+'</span>'+
+    (venc>0?'&nbsp;<span style="background:var(--R)">'+venc+' venc.</span>':'')+
+    (prox>0?'&nbsp;<span style="background:var(--A)">'+prox+' próx.</span>':'')+
+    (ok>0  ?'&nbsp;<span style="background:var(--G)">'+ok+' ok</span>':'')+
+    '</div><div class="lista-grid">';
+  if(!regs.length){
+    h+='<p style="color:var(--GT);font-size:12px">Sin preventivos para este período</p>';
+  } else {
+    regs.forEach(function(r){
+      var clave=r[0]+'||'+r[15];
+      var fe=plFechaEf(r);
+      var dd=plDiasDiff(fe);
+      var cl=plClsReg(dd);
+      var mod=!!PL_FMOD[clave];
+      h+='<div class="lista-card '+cl.lcls+'">'+
+        '<div class="lc-dot" style="background:'+cl.dot+'"></div>'+
+        '<div class="lc-body">'+
+          '<div class="lc-pat">'+r[0]+'</div>'+
+          '<div class="lc-rut">'+(r[6]||'Trabajo')+'</div>'+
+          '<div class="lc-cen">'+r[1]+' · '+r[3].split('-').slice(0,2).join('-')+'</div>'+
+        '</div>'+
+        '<div class="lc-right">'+
+          '<div class="lc-fecha">'+plToDDMM(fe)+'</div>'+
+          '<div class="lc-dev" style="color:'+cl.col+'">'+plDevTxt(dd)+'</div>'+
+          (mod?'<div class="lc-mod">&#9999;&#65039; mod.</div>':'')+
+        '</div></div>';
+    });
+  }
+  h+='</div>';
+  var el=document.getElementById('pl-lista');
+  if(el) el.innerHTML=h;
+}
+
+function plCambiarFecha(inp){
+  var val=inp.value; if(!val)return;
+  var p=val.split('-');
+  PL_FMOD[inp.dataset.clave]=p[2]+'/'+p[1]+'/'+p[0];
+  fetch('https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqdp95ka1LIo2LJuPvSPrQix3jrUOqZQcu0vB/exec',{
+    method:'POST',
+    body:JSON.stringify({accion:'planFecha',
+      patente:inp.dataset.clave.split('||')[0],
+      consecutivo:inp.dataset.clave.split('||')[1],
+      fechaPlanif:PL_FMOD[inp.dataset.clave]})
+  }).catch(function(){});
+  plRender();
+}
+
 function guardarCampoPlan(input) {
   var clave   = input.dataset.clave;
   var pat     = input.dataset.pat;
@@ -573,6 +965,9 @@ fetch("https://script.google.com/macros/s/AKfycbx_pjL2uAsvM0TPw0U2lQqlReIF0uHpqd
   P=j.P||[];
   PT=j.PT||{};
   IMP=j.IMP||{items:[],guardado:{}};
+  // Cargar fechas planificadas guardadas
+  var pf=j.PF||{};
+  Object.keys(pf).forEach(function(k){ PL_FMOD[k]=pf[k]; });
   DATA=D.slice();
   document.getElementById("gfl").style.display="none";
 
@@ -705,6 +1100,7 @@ function go(){
   var tabActivo=document.querySelector('.tb.act');
   if(tabActivo&&tabActivo.dataset.t==='p')renderPendientes();
   if(tabActivo&&tabActivo.dataset.t==='im')renderImpl();
+  if(tabActivo&&tabActivo.dataset.t==='pl')plRender();
 }
 
 function rtags(){
@@ -1000,6 +1396,7 @@ document.querySelectorAll('.tb').forEach(function(btn){
     document.getElementById('tp-'+btn.dataset.t).classList.add('act');
     if(btn.dataset.t==='p'){renderPendientes();}
     if(btn.dataset.t==='im'){renderImpl();}
+    if(btn.dataset.t==='pl'){plRender();}
     if(btn.dataset.t==='g'||btn.dataset.t==='t'){
       setTimeout(function(){tend('cv1',220);tend('cv2',300);},60);
     }
