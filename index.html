@@ -1203,9 +1203,9 @@ function cargarTareasOT(cons, patente) {
 
 
 // ── PLANIFICACIÓN ────────────────────────────────────────────
-function plHoy(){PL_cursor=new Date();if(PL_vista==='mes')PL_cursor.setDate(1);plRender();}
+window.plHoy = function(){PL_cursor=new Date();if(PL_vista==='mes')PL_cursor.setDate(1);plRender();}
 
-function plVista(v){
+window.plVista = function(v){
   PL_vista=v;
   ['mes','semana','dia'].forEach(function(x){
     document.getElementById('pl-vista-'+x).style.display=x===v?'':'none';
@@ -1217,39 +1217,39 @@ function plVista(v){
   plRender();
 }
 
-function plNav(d){
+window.plNav = function(d){
   if(PL_vista==='mes') PL_cursor=new Date(PL_cursor.getFullYear(),PL_cursor.getMonth()+(d>0?1:-1),1);
   else PL_cursor.setDate(PL_cursor.getDate()+d);
   plRender();
 }
 
-function plIrDia(y,m,d){PL_cursor=new Date(y,m,d);plVista('dia');}
+window.plIrDia = function(y,m,d){PL_cursor=new Date(y,m,d);plVista('dia');}
 
-function plFechaEf(r){
+window.plFechaEf = function(r){
   var raw=PL_FMOD[r[0]+'||'+r[15]]||r[13];
   if(!raw)return null;
   var p=raw.split('/');
   return p.length===3?new Date(+p[2],+p[1]-1,+p[0]):null;
 }
 
-function plDiasDiff(f){
+window.plDiasDiff = function(f){
   if(!f)return null;
   var hoy=new Date();hoy.setHours(0,0,0,0);
   return Math.round((new Date(f.getFullYear(),f.getMonth(),f.getDate())-hoy)/86400000);
 }
 
-function plToISO(d){return d?d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0'):'';}
-function plToDDMM(d){return d?(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0')+'/'+d.getFullYear():'';}
+window.plToISO = function(d){return d?d.getFullYear()+'-'+(d.getMonth()+1+'').padStart(2,'0')+'-'+(d.getDate()+'').padStart(2,'0'):'';}
+window.plToDDMM = function(d){return d?(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0')+'/'+d.getFullYear():'';}
 
 // cod=0 VERDE (por vencer) | cod=1 AMARILLO (en margen <=15d/<=1000km/<=5000km CUYO) | cod=2 ROJO (fuera margen)
-function plCls(r){
+window.plCls = function(r){
   var cod=r[17];
   if(cod===2)return{col:'var(--R)',dot:'var(--R)',wcls:'wi-v',lcls:'lc-v'};
   if(cod===1)return{col:'var(--A)',dot:'var(--A)',wcls:'wi-p',lcls:'lc-p'};
   return           {col:'var(--G)',dot:'var(--G)',wcls:'wi-o',lcls:'lc-o'};
 }
 
-function plFil(){
+window.plFil = function(){
   return P.filter(function(r){
     if(FIL.ce.length&&FIL.ce.indexOf(r[3])<0)return false;
     if(FIL.ti.length&&FIL.ti.indexOf(r[1])<0)return false;
@@ -1260,7 +1260,7 @@ function plFil(){
   });
 }
 
-function plRender(){
+window.plRender = function(){
   if(!document.querySelector('[data-t="pl"].act'))return;
   plKpis();
   if(PL_vista==='mes')plMes();
@@ -1269,7 +1269,7 @@ function plRender(){
   if(PL_vista!=='dia')plLista();
 }
 
-function plKpis(){
+window.plKpis = function(){
   var f=plFil(),fuera=0,enMar=0,porVen=0;
   f.forEach(function(r){if(r[17]===2)fuera++;else if(r[17]===1)enMar++;else porVen++;});
   var el=document.getElementById('pl-kpis');if(!el)return;
@@ -1280,7 +1280,7 @@ function plKpis(){
     '<div class="kc" style="border-top:3px solid var(--G);min-width:110px;flex:1"><div class="kl">Por vencer / Al d&iacute;a</div><div class="kv" style="color:var(--G)">'+porVen+'</div><div class="ks2">dentro del plazo</div></div>';
 }
 
-function plMes(){
+window.plMes = function(){
   var f=plFil(),hoy=new Date();
   var y=PL_cursor.getFullYear(),m=PL_cursor.getMonth();
   var nombre=new Date(y,m,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
@@ -1315,7 +1315,7 @@ function plMes(){
   document.getElementById('pl-vista-mes').innerHTML=h;
 }
 
-function plSemana(){
+window.plSemana = function(){
   var f=plFil(),hoy=new Date();
   var lunes=new Date(PL_cursor);
   lunes.setDate(PL_cursor.getDate()-((PL_cursor.getDay()+6)%7));
@@ -1342,7 +1342,7 @@ function plSemana(){
   document.getElementById('pl-vista-semana').innerHTML=h;
 }
 
-function plDia(){
+window.plDia = function(){
   var f=plFil(),hoy=new Date();
   var y=PL_cursor.getFullYear(),mo=PL_cursor.getMonth(),d=PL_cursor.getDate();
   var nombre=PL_cursor.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -1378,7 +1378,7 @@ function plDia(){
   document.getElementById('pl-vista-dia').innerHTML=h;
 }
 
-function plLista(){
+window.plLista = function(){
   var f=plFil(),regs=[];
   if(PL_vista==='mes'){
     var y=PL_cursor.getFullYear(),m=PL_cursor.getMonth();
@@ -1435,7 +1435,7 @@ function plLista(){
   var el=document.getElementById('pl-lista');if(el)el.innerHTML=h;
 }
 
-function plCambiarFecha(inp){
+window.plCambiarFecha = function(inp){
   var val=inp.value;if(!val)return;
   var p=val.split('-');
   PL_FMOD[inp.dataset.clave]=p[2]+'/'+p[1]+'/'+p[0];
