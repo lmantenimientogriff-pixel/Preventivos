@@ -365,6 +365,16 @@ tbody tr:hover td{background:#fef9f9}
         <button onclick="plHoy()"  style="padding:4px 12px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--R);color:#fff;font-weight:700">Hoy</button>
       </div>
       <div id="pl-kpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <div id="pl-grafico" style="background:#fff;border:1px solid var(--BO);border-radius:8px;padding:14px 16px;margin-bottom:14px;display:none">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--GT);margin-bottom:10px" id="pl-graf-titulo">Preventivos por día</div>
+        <canvas id="pl-cv" style="display:block;width:100%"></canvas>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--GT);align-items:center">
+          <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:12px;height:3px;background:var(--R);border-radius:2px"></span>Fuera margen</div>
+          <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:12px;height:3px;background:var(--A);border-radius:2px"></span>En margen</div>
+          <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:12px;height:3px;background:var(--G);border-radius:2px"></span>Por vencer</div>
+          <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:12px;height:3px;border-top:2px dashed var(--B);background:transparent"></span>Promedio</div>
+        </div>
+      </div>
       <div id="pl-vista-mes"></div>
       <div id="pl-vista-semana" style="display:none"></div>
       <div id="pl-vista-dia"    style="display:none"></div>
@@ -1260,6 +1270,93 @@ window.plFil = function(){
   });
 }
 
+
+window.plGrafico = function(registros, etiquetas, titulo){
+  var wrap = document.getElementById('pl-grafico');
+  var cv   = document.getElementById('pl-cv');
+  if(!wrap||!cv) return;
+  if(!registros||!registros.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  var tit = document.getElementById('pl-graf-titulo');
+  if(tit) tit.textContent = titulo||'Preventivos por día';
+
+  var W   = cv.parentElement.offsetWidth - 32;
+  var H   = 160;
+  var dpr = window.devicePixelRatio||1;
+  cv.width=W*dpr; cv.height=H*dpr;
+  var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  cv.style.height=H+'px';
+
+  var PAD={t:18,r:16,b:28,l:34};
+  var dw=W-PAD.l-PAD.r, dh=H-PAD.t-PAD.b;
+  var maxV=0, totTot=0, diasConPrev=0;
+  registros.forEach(function(r){
+    if(r.total>maxV) maxV=r.total;
+    totTot+=r.total;
+    if(r.total>0) diasConPrev++;
+  });
+  maxV = Math.ceil((maxV+1)/2)*2;
+  if(maxV===0) maxV=2;
+  var promV = diasConPrev>0 ? totTot/diasConPrev : 0;
+
+  var n=registros.length;
+  var xf=function(i){ return PAD.l+(n>1?i/(n-1)*dw:dw/2); };
+  var yf=function(v){ return PAD.t+dh-(v/maxV)*dh; };
+
+  // Grilla
+  ctx.strokeStyle='#e0e2e8'; ctx.lineWidth=1;
+  var step = maxV<=4?1:maxV<=8?2:Math.ceil(maxV/4);
+  for(var v=0;v<=maxV;v+=step){
+    var y=yf(v);
+    ctx.beginPath(); ctx.moveTo(PAD.l,y); ctx.lineTo(PAD.l+dw,y); ctx.stroke();
+    ctx.fillStyle='#6b7280'; ctx.font='9px Calibri'; ctx.textAlign='right';
+    ctx.fillText(v, PAD.l-4, y+3);
+  }
+
+  // Área de fondo
+  ctx.beginPath();
+  registros.forEach(function(r,i){
+    var x=xf(i), y=yf(r.total);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.lineTo(xf(n-1),PAD.t+dh); ctx.lineTo(xf(0),PAD.t+dh); ctx.closePath();
+  var gr=ctx.createLinearGradient(0,PAD.t,0,PAD.t+dh);
+  gr.addColorStop(0,'rgba(55,138,221,.12)'); gr.addColorStop(1,'rgba(55,138,221,0)');
+  ctx.fillStyle=gr; ctx.fill();
+
+  // Línea total
+  ctx.beginPath(); ctx.strokeStyle='#378ADD'; ctx.lineWidth=2; ctx.lineJoin='round';
+  registros.forEach(function(r,i){
+    var x=xf(i), y=yf(r.total);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }); ctx.stroke();
+
+  // Puntos coloreados
+  registros.forEach(function(r,i){
+    if(r.total===0) return;
+    var col=r.fuera>0?'#C00000':r.margen>0?'#EF9F27':'#1D9E75';
+    ctx.beginPath(); ctx.arc(xf(i),yf(r.total),3.5,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  });
+
+  // Línea promedio
+  if(promV>0){
+    var yP=yf(promV);
+    ctx.strokeStyle='#378ADD'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(PAD.l,yP); ctx.lineTo(PAD.l+dw,yP); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#378ADD'; ctx.font='bold 9px Calibri'; ctx.textAlign='right';
+    ctx.fillText('Prom. '+promV.toFixed(1), PAD.l+dw, yP-4);
+  }
+
+  // Eje X — etiquetas
+  ctx.fillStyle='#6b7280'; ctx.font='9px Calibri'; ctx.textAlign='center';
+  var cadaN = n>15?3:n>7?2:1;
+  etiquetas.forEach(function(e,i){
+    if(i%cadaN===0) ctx.fillText(e, xf(i), H-8);
+  });
+};
 window.plRender = function(){
   if(!document.querySelector('[data-t="pl"].act'))return;
   plKpis();
@@ -1313,6 +1410,18 @@ window.plMes = function(){
   }
   h+='</div>';
   document.getElementById('pl-vista-mes').innerHTML=h;
+  var regsMes=[],etiqMes=[];
+  for(var gd=1;gd<=ult;gd++){
+    var gr2=pm[gd]||[];
+    regsMes.push({total:gr2.length,
+      fuera:gr2.filter(function(r){return r[17]===2;}).length,
+      margen:gr2.filter(function(r){return r[17]===1;}).length,
+      ok:gr2.filter(function(r){return r[17]===0;}).length});
+    etiqMes.push(gd);
+  }
+  setTimeout(function(){
+    plGrafico(regsMes,etiqMes,'Preventivos por dia — '+nombre);
+  },30);
 }
 
 window.plSemana = function(){
@@ -1340,6 +1449,20 @@ window.plSemana = function(){
   }
   h+='</div>';
   document.getElementById('pl-vista-semana').innerHTML=h;
+  var regsSem=[],etiqSem=[];
+  for(var si=0;si<7;si++){
+    var sd=new Date(lunes);sd.setDate(lunes.getDate()+si);
+    var sregs=f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.toDateString()===sd.toDateString();});
+    var dows2=['Lun','Mar','Mie','Jue','Vie','Sab','Dom'];
+    regsSem.push({total:sregs.length,
+      fuera:sregs.filter(function(r){return r[17]===2;}).length,
+      margen:sregs.filter(function(r){return r[17]===1;}).length,
+      ok:sregs.filter(function(r){return r[17]===0;}).length});
+    etiqSem.push(dows2[si]);
+  }
+  setTimeout(function(){
+    plGrafico(regsSem,etiqSem,'Preventivos por dia — semana del '+plToDDMM(lunes));
+  },30);
 }
 
 window.plDia = function(){
