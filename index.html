@@ -182,6 +182,63 @@ tbody tr:hover td{background:#fef9f9}
 .lc-dev{font-size:12px;font-weight:700;margin-top:2px}
 .lc-mod{font-size:9px;color:var(--G);font-weight:700}
 
+
+/* INFORME PDF */
+@media print{
+  #bar,#fs,#ks,#ts,#btn-pl-pdf{display:none!important}
+  #pl-informe{display:block!important}
+  body{background:#fff!important}
+  .pl-page{page-break-after:always;box-shadow:none!important;margin:0!important;width:100%!important;padding:12mm 14mm!important}
+  .pl-page:last-child{page-break-after:auto}
+}
+.pl-page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;
+  padding:14mm 15mm 12mm;box-shadow:0 4px 20px rgba(0,0,0,.15);position:relative;font-family:var(--F)}
+.pl-hdr{display:flex;justify-content:space-between;align-items:flex-start;
+  padding-bottom:8px;border-bottom:3px solid var(--R);margin-bottom:12px}
+.pl-hdr-logo{font-size:18px;font-weight:700;letter-spacing:2px;color:var(--R)}
+.pl-hdr-sub{font-size:9px;color:var(--GT);margin-top:2px}
+.pl-hdr-title{font-size:9px;color:var(--GT);text-align:right;line-height:1.7}
+.pl-hdr-title strong{font-size:12px;color:var(--N);display:block}
+.pl-sec{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--GT);border-bottom:1px solid var(--BO);padding-bottom:3px;margin:12px 0 7px}
+.pl-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.pl-kpi{border-radius:5px;padding:7px 9px;border:1px solid var(--BO)}
+.pl-kpi-l{font-size:8px;color:var(--GT);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.pl-kpi-v{font-size:19px;font-weight:700;margin-top:2px}
+.pl-kpi-s{font-size:8px;color:var(--GT);margin-top:1px}
+.pl-graf{border:1px solid var(--BO);border-radius:5px;padding:9px 10px;margin-bottom:10px}
+.pl-graf-t{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--GT);letter-spacing:.3px;margin-bottom:7px}
+.pl-ley{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:8px;color:var(--GT);align-items:center}
+.pl-ley-i{display:flex;align-items:center;gap:4px}
+.pl-ley-l{width:12px;height:2px;border-radius:1px;display:inline-block}
+.pl-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.pl-dow{text-align:center;font-size:7px;font-weight:700;color:var(--GT);padding:2px 0;text-transform:uppercase}
+.pl-cday{border:1px solid var(--BO);border-radius:2px;min-height:30px;padding:2px 3px;font-size:8px}
+.pl-cday.vacio{background:#f9f9f9;opacity:.4}
+.pl-cday.hoy{border-color:var(--B)}
+.pl-cdn{font-weight:700;color:#374151;font-size:8px;margin-bottom:1px}
+.pl-cday.hoy .pl-cdn{color:var(--B)}
+.pl-cb{font-size:7px;font-weight:700;border-radius:2px;padding:0 3px;display:inline-block}
+.pl-cb-v{background:#fee2e2;color:#991b1b}.pl-cb-a{background:#fef9c3;color:#854d0e}.pl-cb-o{background:#dcfce7;color:#166534}
+.pl-tbl{width:100%;border-collapse:collapse;font-size:9px}
+.pl-tbl thead th{background:#1a1a1a;color:#fff;padding:4px 6px;text-align:left;
+  font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.2px}
+.pl-tbl tbody td{padding:3px 6px;border-bottom:1px solid var(--BO)}
+.pl-tbl tbody tr:nth-child(even) td{background:#fafafa}
+.pl-badge{display:inline-block;padding:1px 6px;border-radius:7px;font-size:8px;font-weight:700}
+.pl-bv{background:#fee2e2;color:#991b1b}.pl-ba{background:#fef9c3;color:#854d0e}.pl-bo{background:#dcfce7;color:#166534}
+.pl-footer{position:absolute;bottom:8mm;left:15mm;right:15mm;display:flex;
+  justify-content:space-between;font-size:7px;color:var(--GT);
+  border-top:1px solid var(--BO);padding-top:3px}
+#pl-informe{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#e8e8e8;z-index:9999;overflow-y:auto;padding:20px 0}
+#pl-informe-close{position:fixed;top:16px;right:180px;z-index:10000;
+  background:var(--N);color:#fff;border:none;padding:8px 16px;border-radius:6px;
+  font-size:12px;cursor:pointer;font-family:var(--F)}
+#pl-informe-print{position:fixed;top:16px;right:16px;z-index:10000;
+  background:var(--R);color:#fff;border:none;padding:8px 18px;border-radius:6px;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:var(--F)}
+
 </style>
 </head>
 <body>
@@ -363,6 +420,7 @@ tbody tr:hover td{background:#fef9f9}
         <button id="pl-btn-semana" onclick="plVista('semana')" style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128198; Semana</button>
         <button id="pl-btn-dia"    onclick="plVista('dia')"    style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128203; D&iacute;a</button>
         <button onclick="plHoy()"  style="padding:4px 12px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--R);color:#fff;font-weight:700">Hoy</button>
+        <button id="btn-pl-pdf" onclick="plGenerarPDF()" style="padding:4px 14px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--N);color:#fff;font-weight:700;margin-left:8px">&#8595; Informe PDF</button>
       </div>
       <div id="pl-kpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
       <div id="pl-grafico" style="background:#fff;border:1px solid var(--BO);border-radius:8px;padding:14px 16px;margin-bottom:14px;display:none">
@@ -1558,6 +1616,261 @@ window.plLista = function(){
   var el=document.getElementById('pl-lista');if(el)el.innerHTML=h;
 }
 
+
+window.plCerrarInforme = function(){
+  document.getElementById('pl-informe').style.display='none';
+};
+
+window.plGenerarPDF = function(){
+  var f    = plFil();
+  var vista= PL_vista;
+  var hoy  = new Date();
+
+  // Calcular período y registros según vista
+  var regsInf=[], titulo='', subtitulo='', etiqGraf=[], regsGraf=[];
+  var y=PL_cursor.getFullYear(), m=PL_cursor.getMonth();
+
+  if(vista==='mes'||vista==='semana'){
+    var lunes, dom, ult, prim2;
+    if(vista==='mes'){
+      ult  = new Date(y,m+1,0).getDate();
+      prim2= new Date(y,m,1).getDay();
+      titulo = new Date(y,m,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+      subtitulo = 'Vista: Mes';
+      // Agrupar por día
+      var pmInf={};
+      f.forEach(function(r){
+        var fe=plFechaEf(r);if(!fe||fe.getFullYear()!==y||fe.getMonth()!==m)return;
+        var k=fe.getDate();if(!pmInf[k])pmInf[k]=[];pmInf[k].push(r);
+      });
+      for(var gd=1;gd<=ult;gd++){
+        var gregs=pmInf[gd]||[];
+        regsGraf.push({total:gregs.length,
+          fuera:gregs.filter(function(r){return r[17]===2;}).length,
+          margen:gregs.filter(function(r){return r[17]===1;}).length,
+          ok:gregs.filter(function(r){return r[17]===0;}).length});
+        etiqGraf.push(gd);
+      }
+      // Listado: vencidos + mes actual
+      regsInf=f.filter(function(r){
+        var fe=plFechaEf(r);if(!fe)return false;
+        if(r[17]>0)return true;
+        return fe.getFullYear()===y&&fe.getMonth()===m;
+      });
+    } else {
+      lunes=new Date(PL_cursor);lunes.setDate(PL_cursor.getDate()-((PL_cursor.getDay()+6)%7));
+      dom=new Date(lunes);dom.setDate(lunes.getDate()+6);
+      titulo='Semana del '+plToDDMM(lunes);
+      subtitulo='Vista: Semana';
+      var dows2=['Lun','Mar','Mie','Jue','Vie','Sab','Dom'];
+      for(var si=0;si<7;si++){
+        var sd=new Date(lunes);sd.setDate(lunes.getDate()+si);
+        var sregs=f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.toDateString()===sd.toDateString();});
+        regsGraf.push({total:sregs.length,
+          fuera:sregs.filter(function(r){return r[17]===2;}).length,
+          margen:sregs.filter(function(r){return r[17]===1;}).length,
+          ok:sregs.filter(function(r){return r[17]===0;}).length});
+        etiqGraf.push(dows2[si]);
+      }
+      regsInf=f.filter(function(r){
+        var fe=plFechaEf(r);if(!fe)return false;
+        if(r[17]>0)return true;
+        return fe>=lunes&&fe<=dom;
+      });
+    }
+  } else {
+    // Vista día
+    var dd=PL_cursor.getDate();
+    titulo=PL_cursor.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    subtitulo='Vista: Día';
+    regsInf=f.filter(function(r){
+      var fe=plFechaEf(r);
+      return fe&&fe.getFullYear()===y&&fe.getMonth()===m&&fe.getDate()===dd;
+    });
+    regsGraf=[{total:regsInf.length,
+      fuera:regsInf.filter(function(r){return r[17]===2;}).length,
+      margen:regsInf.filter(function(r){return r[17]===1;}).length,
+      ok:regsInf.filter(function(r){return r[17]===0;}).length}];
+    etiqGraf=[dd];
+  }
+
+  // Ordenar: fuera margen primero
+  regsInf.sort(function(a,b){
+    if(b[17]!==a[17])return b[17]-a[17];
+    return(plDiasDiff(plFechaEf(a))||0)-(plDiasDiff(plFechaEf(b))||0);
+  });
+
+  // KPIs
+  var fuera=regsInf.filter(function(r){return r[17]===2;}).length;
+  var enMar=regsInf.filter(function(r){return r[17]===1;}).length;
+  var porVen=regsInf.filter(function(r){return r[17]===0;}).length;
+  var totTotGraf=0,dcGraf=0;
+  regsGraf.forEach(function(r){totTotGraf+=r.total;if(r.total>0)dcGraf++;});
+  var promGraf=dcGraf>0?(totTotGraf/dcGraf).toFixed(1):'0';
+
+  // Filtros activos
+  var filActivos=[];
+  if(FIL.ce.length)filActivos.push('Centro: '+FIL.ce.join(', '));
+  if(FIL.ti.length)filActivos.push('Tipo: '+FIL.ti.join(', '));
+  if(FIL.m.length)filActivos.push('Marca: '+FIL.m.join(', '));
+  if(FIL.ci.length)filActivos.push('Ciudad: '+FIL.ci.join(', '));
+  if(FIL.v)filActivos.push('Vehículo: '+FIL.v);
+  var filStr=filActivos.length?filActivos.join(' · '):'Todos los centros';
+
+  var fechaHoy=hoy.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  // ── CONSTRUIR HTML DEL INFORME ────────────────────────────
+  var h='';
+
+  // PÁGINA 1
+  h+='<div class="pl-page">';
+  h+='<div class="pl-hdr">';
+  h+='<div><div class="pl-hdr-logo">GRIFFOULIERE</div><div class="pl-hdr-sub">SGI · Mantenimiento Preventivo</div></div>';
+  h+='<div class="pl-hdr-title"><strong>Informe de Planificación de Preventivos</strong>'+
+     'Período: '+titulo+' · '+subtitulo+'<br>Generado: '+fechaHoy+' · Filtros: '+filStr+'</div>';
+  h+='</div>';
+
+  // KPIs
+  h+='<div class="pl-sec">Indicadores del período</div>';
+  h+='<div class="pl-kpis">';
+  h+='<div class="pl-kpi" style="border-top:3px solid var(--GT)"><div class="pl-kpi-l">Total unidades</div><div class="pl-kpi-v">'+regsInf.length+'</div><div class="pl-kpi-s">preventivos en cartera</div></div>';
+  h+='<div class="pl-kpi" style="border-top:3px solid var(--R)"><div class="pl-kpi-l">Fuera de margen</div><div class="pl-kpi-v" style="color:var(--R)">'+fuera+'</div><div class="pl-kpi-s">requieren atención inmediata</div></div>';
+  h+='<div class="pl-kpi" style="border-top:3px solid var(--A)"><div class="pl-kpi-l">En margen</div><div class="pl-kpi-v" style="color:var(--A)">'+enMar+'</div><div class="pl-kpi-s">vencidos dentro del proc.</div></div>';
+  h+='<div class="pl-kpi" style="border-top:3px solid var(--G)"><div class="pl-kpi-l">Por vencer / Al día</div><div class="pl-kpi-v" style="color:var(--G)">'+porVen+'</div><div class="pl-kpi-s">dentro del plazo</div></div>';
+  h+='</div>';
+  h+='<div class="pl-kpis" style="grid-template-columns:repeat(2,1fr)">';
+  h+='<div class="pl-kpi" style="border-top:3px solid var(--B)"><div class="pl-kpi-l">Promedio por día</div><div class="pl-kpi-v" style="color:var(--B)">'+promGraf+'</div><div class="pl-kpi-s">preventivos / día</div></div>';
+  h+='<div class="pl-kpi" style="border-top:3px solid var(--GT)"><div class="pl-kpi-l">Días con preventivos</div><div class="pl-kpi-v">'+dcGraf+'</div><div class="pl-kpi-s">de '+etiqGraf.length+' días del período</div></div>';
+  h+='</div>';
+
+  // Gráfico (canvas generado después)
+  h+='<div class="pl-sec">Preventivos por día</div>';
+  h+='<div class="pl-graf">';
+  h+='<div class="pl-graf-t">'+titulo+' — Cantidad de preventivos</div>';
+  h+='<canvas id="pl-pdf-cv" style="display:block;width:100%"></canvas>';
+  h+='<div class="pl-ley">';
+  h+='<div class="pl-ley-i"><div class="pl-ley-l" style="background:var(--R)"></div>Fuera margen</div>';
+  h+='<div class="pl-ley-i"><div class="pl-ley-l" style="background:var(--A)"></div>En margen</div>';
+  h+='<div class="pl-ley-i"><div class="pl-ley-l" style="background:var(--G)"></div>Por vencer</div>';
+  h+='<div class="pl-ley-i"><div class="pl-ley-l" style="background:var(--B);border-top:1px dashed var(--B);height:1px"></div>Promedio</div>';
+  h+='</div></div>';
+
+  // Calendario (solo vista mes)
+  if(vista==='mes'){
+    h+='<div class="pl-sec">Calendario — '+titulo+'</div>';
+    h+='<div class="pl-cal">';
+    ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(function(d){h+='<div class="pl-dow">'+d+'</div>';});
+    var pmCal={};
+    regsGraf.forEach(function(r,i){pmCal[i+1]=r;});
+    for(var ci=0;ci<new Date(y,m,1).getDay();ci++)h+='<div class="pl-cday vacio"></div>';
+    for(var cd=1;cd<=new Date(y,m+1,0).getDate();cd++){
+      var cr=pmCal[cd]||{total:0,fuera:0,margen:0,ok:0};
+      var esH=(y===hoy.getFullYear()&&m===hoy.getMonth()&&cd===hoy.getDate());
+      h+='<div class="pl-cday'+(esH?' hoy':'')+'"><div class="pl-cdn">'+cd+'</div>';
+      if(cr.fuera>0)h+='<span class="pl-cb pl-cb-v">'+cr.fuera+'f</span> ';
+      if(cr.margen>0)h+='<span class="pl-cb pl-cb-a">'+cr.margen+'m</span> ';
+      if(cr.ok>0)h+='<span class="pl-cb pl-cb-o">'+cr.ok+'ok</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  h+='<div class="pl-footer"><span>Griffoulière S.A. · SGI · Mantenimiento Preventivo</span><span>Página 1 de 2</span><span>Generado: '+fechaHoy+'</span></div>';
+  h+='</div>';
+
+  // PÁGINA 2 — Listado
+  h+='<div class="pl-page">';
+  h+='<div class="pl-hdr">';
+  h+='<div><div class="pl-hdr-logo">GRIFFOULIERE</div><div class="pl-hdr-sub">SGI · Mantenimiento Preventivo</div></div>';
+  h+='<div class="pl-hdr-title"><strong>Listado de Unidades — '+titulo+'</strong>Ordenado: Fuera de margen primero</div>';
+  h+='</div>';
+  h+='<div class="pl-sec">Unidades con preventivos pendientes ('+regsInf.length+')</div>';
+  h+='<table class="pl-tbl"><thead><tr>';
+  ['#','Patente','Tipo','Marca','Rutina','Centro','Fecha Progr.','Estado','Desvío'].forEach(function(c){h+='<th>'+c+'</th>';});
+  h+='</tr></thead><tbody>';
+  if(!regsInf.length){
+    h+='<tr><td colspan="9" style="text-align:center;color:#6b7280;padding:12px">Sin preventivos para este período</td></tr>';
+  } else {
+    regsInf.forEach(function(r,i){
+      var bc=r[17]===2?'pl-bv':r[17]===1?'pl-ba':'pl-bo';
+      var bg=r[17]===2?'rgba(192,0,0,.03)':r[17]===1?'rgba(239,159,39,.03)':'';
+      var fe=plFechaEf(r);
+      h+='<tr style="background:'+bg+'">';
+      h+='<td style="color:#9ca3af">'+(i+1)+'</td>';
+      h+='<td style="font-weight:700">'+r[0]+'</td>';
+      h+='<td>'+r[1]+'</td>';
+      h+='<td>'+r[2]+'</td>';
+      h+='<td>'+(r[6]||'—')+'</td>';
+      h+='<td style="font-size:8px;color:var(--GT)">'+r[3].split('-').slice(0,2).join('-')+'</td>';
+      h+='<td style="text-align:center">'+(fe?plToDDMM(fe):(r[13]||'—'))+'</td>';
+      var est=r[17]===2?'Fuera margen':r[17]===1?'En margen':'Por vencer';
+      h+='<td><span class="pl-badge '+bc+'">'+est+'</span></td>';
+      h+='<td style="font-weight:600;color:'+(r[17]===2?'var(--R)':r[17]===1?'var(--A)':'var(--G)')+'">'+( r[9]||'—')+'</td>';
+      h+='</tr>';
+    });
+  }
+  h+='</tbody></table>';
+  h+='<div class="pl-footer"><span>Griffoulière S.A. · SGI · Mantenimiento Preventivo</span><span>Página 2 de 2</span><span>Generado: '+fechaHoy+'</span></div>';
+  h+='</div>';
+
+  // Mostrar
+  var cont=document.getElementById('pl-informe-content');
+  cont.innerHTML=h;
+  document.getElementById('pl-informe').style.display='block';
+
+  // Dibujar gráfico
+  setTimeout(function(){
+    var cv=document.getElementById('pl-pdf-cv');
+    if(!cv)return;
+    var W=cv.parentElement.offsetWidth-20, H=120;
+    cv.width=W; cv.height=H;
+    cv.style.height=H+'px';
+    var ctx=cv.getContext('2d');
+    var PAD={t:14,r:14,b:22,l:28};
+    var dw=W-PAD.l-PAD.r, dh=H-PAD.t-PAD.b;
+    var n=regsGraf.length;
+    var maxV=Math.max.apply(null,regsGraf.map(function(r){return r.total;}))||1;
+    maxV=Math.ceil((maxV+1)/2)*2;
+    var xf=function(i){return PAD.l+(n>1?i/(n-1)*dw:dw/2);};
+    var yf=function(v){return PAD.t+dh-(v/maxV)*dh;};
+    var tot2=0,dc2=0;
+    regsGraf.forEach(function(r){tot2+=r.total;if(r.total>0)dc2++;});
+    var prom2=dc2>0?tot2/dc2:0;
+
+    ctx.strokeStyle='#e0e2e8';ctx.lineWidth=.8;
+    var step=maxV<=4?1:2;
+    for(var v=0;v<=maxV;v+=step){
+      var gy=yf(v);ctx.beginPath();ctx.moveTo(PAD.l,gy);ctx.lineTo(PAD.l+dw,gy);ctx.stroke();
+      ctx.fillStyle='#9ca3af';ctx.font='8px Calibri';ctx.textAlign='right';ctx.fillText(v,PAD.l-3,gy+3);
+    }
+    ctx.beginPath();
+    regsGraf.forEach(function(r,i){var x=xf(i),y=yf(r.total);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    ctx.lineTo(xf(n-1),PAD.t+dh);ctx.lineTo(xf(0),PAD.t+dh);ctx.closePath();
+    var gr=ctx.createLinearGradient(0,PAD.t,0,PAD.t+dh);
+    gr.addColorStop(0,'rgba(55,138,221,.15)');gr.addColorStop(1,'rgba(55,138,221,0)');
+    ctx.fillStyle=gr;ctx.fill();
+    ctx.beginPath();ctx.strokeStyle='#378ADD';ctx.lineWidth=1.8;ctx.lineJoin='round';
+    regsGraf.forEach(function(r,i){var x=xf(i),y=yf(r.total);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+    ctx.stroke();
+    regsGraf.forEach(function(r,i){
+      if(r.total===0)return;
+      var col=r.fuera>0?'#C00000':r.margen>0?'#EF9F27':'#1D9E75';
+      ctx.beginPath();ctx.arc(xf(i),yf(r.total),2.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();
+    });
+    if(prom2>0){
+      var yP=yf(prom2);
+      ctx.strokeStyle='#378ADD';ctx.lineWidth=1.2;ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(PAD.l,yP);ctx.lineTo(PAD.l+dw,yP);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#378ADD';ctx.font='bold 8px Calibri';ctx.textAlign='right';
+      ctx.fillText('Prom. '+prom2.toFixed(1),PAD.l+dw,yP-3);
+    }
+    ctx.fillStyle='#9ca3af';ctx.font='8px Calibri';ctx.textAlign='center';
+    var cadaN=n>15?3:n>7?2:1;
+    etiqGraf.forEach(function(e,i){if(i%cadaN===0)ctx.fillText(e,xf(i),H-5);});
+  },100);
+};
 window.plCambiarFecha = function(inp){
   var val=inp.value;if(!val)return;
   var p=val.split('-');
@@ -1580,5 +1893,6 @@ toast(fmt(D.length)+' registros cargados','ok');
   console.error("fetch error:",e);
 });
 </script>
+<div id="pl-informe"><button id="pl-informe-close" onclick="plCerrarInforme()">✕ Cerrar</button><button id="pl-informe-print" onclick="window.print()">⬇ Descargar PDF</button><div id="pl-informe-content"></div></div>
 </body>
 </html>
