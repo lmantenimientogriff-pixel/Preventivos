@@ -239,6 +239,27 @@ tbody tr:hover td{background:#fef9f9}
   background:var(--R);color:#fff;border:none;padding:8px 18px;border-radius:6px;
   font-size:12px;font-weight:700;cursor:pointer;font-family:var(--F)}
 
+
+/* EXPORTAR EXCEL / PDF */
+.ex-bar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px}
+.ex-btn{padding:5px 14px;font-size:12px;font-weight:700;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);color:#fff}
+.ex-btn:hover{opacity:.88}
+.ex-x{background:#1D6F42}.ex-p{background:var(--N)}
+.ex-page{min-height:0!important}
+.ex-page,.ex-page *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ex-fil{font-size:9px;color:var(--GT);margin:4px 0 8px;line-height:1.5}
+.ex-foot{display:flex;justify-content:space-between;font-size:7px;color:var(--GT);border-top:1px solid var(--BO);padding-top:3px;margin-top:14px}
+.ex-tbl.ex-wide{font-size:7.5px}
+.ex-tbl .pl-badge{font-size:7px;padding:0 5px}
+.ex-tbl thead{display:table-header-group}
+.ex-tbl tr{page-break-inside:avoid}
+@media print{
+  .ex-bar{display:none!important}
+  .ex-page{min-height:0!important}
+  /* el visor es position:fixed: sin esto Chrome imprime solo la 1ra página */
+  #pl-informe{position:static!important;height:auto!important;overflow:visible!important;padding:0!important;background:#fff!important}
+  #pl-informe-close,#pl-informe-print,#tst{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -345,6 +366,7 @@ tbody tr:hover td{background:#fef9f9}
   </div>
   <div id="tc">
     <div class="tp act" id="tp-g">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('g')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('g')">&#8595; PDF</button></div>
       <div id="gg">
         <div class="cc cw">
           <h4>Tendencia Mensual - % A Tiempo vs Vencidas en Margen vs Fuera de Margen</h4>
@@ -360,12 +382,13 @@ tbody tr:hover td{background:#fef9f9}
         </div>
         <div class="cc"><h4>OT por Marca</h4><div class="bl" id="bma"></div></div>
         <div class="cc">
-          <h4>% A Tiempo por Marca (con margen)</h4>
+          <h4>% A Tiempo por Marca (con margen) <span style="font-size:10px;font-weight:400;color:var(--GT);text-transform:none">&mdash; barra: a tiempo + <span style="color:#EF9F27;font-weight:700">vencidas en margen</span></span></h4>
           <div class="bl" id="bmp"></div>
         </div>
       </div>
     </div>
     <div class="tp" id="tp-c">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('c')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('c')">&#8595; PDF</button></div>
       <div class="stit">Cumplimiento por Centro de Costo</div>
       <div class="sw" style="max-height:600px">
         <table><thead><tr>
@@ -376,6 +399,7 @@ tbody tr:hover td{background:#fef9f9}
       </div>
     </div>
     <div class="tp" id="tp-t">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('t')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('t')">&#8595; PDF</button></div>
       <div class="stit">Evolucion Mensual Detallada</div>
       <div style="height:300px"><canvas id="cv2"></canvas></div>
       <div style="margin-top:20px;overflow-x:auto" id="ttend"></div>
@@ -391,6 +415,7 @@ tbody tr:hover td{background:#fef9f9}
       </div>
     </div>
     <div class="tp" id="tp-d">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('d')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('d')">&#8595; PDF</button></div>
       <div class="tac"><span class="tcn" id="tcn">--</span><span style="font-size:11px;color:var(--GT)">Max 500 filas</span></div>
       <div class="sw">
         <table><thead><tr>
@@ -401,6 +426,7 @@ tbody tr:hover td{background:#fef9f9}
       </div>
     </div>
     <div class="tp" id="tp-u">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('u')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('u')">&#8595; PDF</button></div>
       <div class="stit">Unidades que Superaron el Margen de Procedimiento <span id="um-count" style="font-size:12px;color:var(--GT);font-weight:400;margin-left:8px"></span></div>
       <div style="font-size:12px;color:var(--GT);margin-bottom:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:10px 14px;line-height:1.6">
         <strong>Criterios:</strong> Periodicidad dias: &gt;15d &nbsp;|&nbsp; Km general: &gt;1.000km &nbsp;|&nbsp; Km CUYO-SHELL: &gt;5.000km<br>
@@ -422,6 +448,7 @@ tbody tr:hover td{background:#fef9f9}
         <button id="pl-btn-dia"    onclick="plVista('dia')"    style="padding:4px 12px;font-size:12px;border:1px solid var(--BO);border-radius:4px;cursor:pointer;font-family:var(--F);background:#fff">&#128203; D&iacute;a</button>
         <button onclick="plHoy()"  style="padding:4px 12px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--R);color:#fff;font-weight:700">Hoy</button>
         <button id="btn-pl-pdf" onclick="plGenerarPDF()" style="padding:4px 14px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:var(--N);color:#fff;font-weight:700;margin-left:8px">&#8595; Informe PDF</button>
+        <button onclick="expExcel('pl')" style="padding:4px 14px;font-size:12px;border:none;border-radius:4px;cursor:pointer;font-family:var(--F);background:#1D6F42;color:#fff;font-weight:700">&#8595; Informe Excel</button>
       </div>
       <div id="pl-kpis" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
       <div id="pl-grafico" style="background:#fff;border:1px solid var(--BO);border-radius:8px;padding:14px 16px;margin-bottom:14px;display:none">
@@ -440,10 +467,12 @@ tbody tr:hover td{background:#fef9f9}
       <div id="pl-lista"></div>
     </div>
     <div class="tp" id="tp-im">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('im')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('im')">&#8595; PDF</button></div>
       <div class="stit">Implementaci&oacute;n de Preventivos &mdash; Rutinas y Trabajos por Unidad</div>
       <div id="impl-cont"><p style="color:#6b7280;text-align:center;padding:24px">Seleccion&aacute; el tab para cargar</p></div>
     </div>
     <div class="tp" id="tp-p">
+      <div class="ex-bar"><button class="ex-btn ex-x" onclick="expExcel('p')">&#8595; Excel</button><button class="ex-btn ex-p" onclick="expPDF('p')">&#8595; PDF</button></div>
       <div class="stit">Plan de Mantenimiento &mdash; Consolidado por Veh&iacute;culo y Rutina</div>
       <div id="pend-cont"><p style="color:#6b7280;text-align:center;padding:24px">Seleccion&aacute; el tab Pendientes para cargar</p></div>
     </div>
@@ -485,6 +514,7 @@ function renderImpl() {
     if (FIL.m.length  && FIL.m.indexOf(r.marca)   < 0) return false;
     if (FIL.ti.length && FIL.ti.indexOf(r.tipo)    < 0) return false;
     if (FIL.ci.length && FIL.ci.indexOf(r.ciudad)  < 0) return false;
+    if (FIL.pa.length && FIL.pa.indexOf(r.patente) < 0) return false;
     if (FIL.v && r.patente.toLowerCase().indexOf(FIL.v.toLowerCase()) < 0) return false;
     return true;
   });
@@ -931,12 +961,12 @@ function donut(){
 
 function bars(){
   var mM={},pM={};
-  DATA.forEach(function(r){if(r[MA]){mM[r[MA]]=(mM[r[MA]]||0)+1;if(!pM[r[MA]])pM[r[MA]]={at:0,t:0};pM[r[MA]].t++;if(r[E]===0)pM[r[MA]].at++;}});
+  DATA.forEach(function(r){if(r[MA]){mM[r[MA]]=(mM[r[MA]]||0)+1;if(!pM[r[MA]])pM[r[MA]]={at:0,t:0,em:0};pM[r[MA]].t++;if(r[E]===0)pM[r[MA]].at++;else if(r[E]===1)pM[r[MA]].em++;}});
   var mE=Object.entries(mM).sort(function(a,b){return b[1]-a[1];});var mX=mE.length?mE[0][1]:1;
   var h='';mE.forEach(function(e){var l=e[0].length>22?e[0].substring(0,22)+'...':e[0];h+='<div class="br"><span class="brl" title="'+e[0]+'">'+l+'</span><div class="brt"><div class="brf" style="width:'+Math.round(e[1]/mX*100)+'%;background:#1D9E75"></div></div><span class="brp">'+fmt(e[1])+'</span></div>';});
   document.getElementById('bma').innerHTML=h;
-  var pE=Object.entries(pM).map(function(e){return[e[0],e[1].t?Math.round(e[1].at/e[1].t*100):0];}).sort(function(a,b){return b[1]-a[1];});
-  h='';pE.forEach(function(e){var objB=calcObj();var c=e[1]>=objB?'#1D9E75':e[1]>=(objB-10)?'#EF9F27':'#C00000';h+='<div class="br"><span class="brl">'+e[0]+'</span><div class="brt"><div class="brf" style="width:'+e[1]+'%;background:'+c+'"></div></div><span class="brp" style="color:'+c+'">'+e[1]+'%</span></div>';});
+  var pE=Object.entries(pM).map(function(e){return[e[0],e[1].t?Math.round(e[1].at/e[1].t*100):0,e[1].t?Math.round(e[1].em/e[1].t*100):0];}).sort(function(a,b){return b[1]-a[1];});
+  h='';pE.forEach(function(e){var objB=calcObj();var c=e[1]>=objB?'#1D9E75':e[1]>=(objB-10)?'#EF9F27':'#C00000';h+='<div class="br"><span class="brl">'+e[0]+'</span><div class="brt" style="display:flex" title="A tiempo '+e[1]+'% · Vencidas en margen '+e[2]+'%"><div class="brf" style="width:'+e[1]+'%;background:'+c+'"></div><div class="brf" style="width:'+e[2]+'%;background:#EF9F27;opacity:.55;border-radius:0"></div></div><span class="brp" style="color:'+c+'">'+e[1]+'%<span style="color:#EF9F27;font-weight:600;font-size:10px"> +'+e[2]+'% marg.</span></span></div>';});
   document.getElementById('bmp').innerHTML=h;
 }
 
@@ -1165,6 +1195,7 @@ function renderPendientes(){
     if(FIL.ci.length&&FIL.ci.indexOf(r[4])<0)return false;
     if(FIL.gp.length&&FIL.gp.indexOf(r[5])<0)return false;
     if(FIL.ru.length&&FIL.ru.indexOf(r[6])<0)return false;
+    if(FIL.pa.length&&FIL.pa.indexOf(r[0])<0)return false;
     if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
     return true;
   }).sort(function(a,b){
@@ -1719,6 +1750,7 @@ window.plGenerarPDF = function(){
   if(FIL.ti.length)filActivos.push('Tipo: '+FIL.ti.join(', '));
   if(FIL.m.length)filActivos.push('Marca: '+FIL.m.join(', '));
   if(FIL.ci.length)filActivos.push('Ciudad: '+FIL.ci.join(', '));
+  if(FIL.pa.length)filActivos.push('Patente: '+FIL.pa.join(', '));
   if(FIL.v)filActivos.push('Vehículo: '+FIL.v);
   var filStr=filActivos.length?filActivos.join(' · '):'Todos los centros';
 
@@ -1888,6 +1920,479 @@ window.plCambiarFecha = function(inp){
   })}).catch(function(){});
   plRender();
 }
+
+// ═══════════════════════════════════════════════════════════════
+// EXPORTACIÓN EXCEL (.xlsx) Y PDF — todas las pestañas
+// Sin librerías externas: el .xlsx se arma a mano (ZIP + XML).
+// Respeta los filtros activos de cada pestaña.
+// ═══════════════════════════════════════════════════════════════
+window.EXP_PDF_MAX = 500;
+// Estilos del .xlsx (índices de cellXfs)
+window.EXP_S = {TIT:1,HDR:2,TXT:3,INT:4,PCT:5,RED:6,YEL:7,GRN:8,LBL:9,NOTE:10,DATE:11,DEC:12};
+
+window.expEsc = function(s){
+  return String(s==null?'':s)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+};
+window.expColL = function(n){var s='';n++;while(n>0){var m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;};
+window.expSerial = function(y,m,d){return Math.round((Date.UTC(y,m-1,d)-Date.UTC(1899,11,30))/86400000);};
+// "DD/MM/YYYY" o "YYYY-MM-DD" → celda fecha real de Excel. Si no se puede interpretar queda como texto.
+window.expFecha = function(str){
+  if(!str)return '';
+  var s=String(str),m;
+  if((m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/)))return{v:expSerial(+m[3],+m[2],+m[1]),s:11,t:('0'+m[1]).slice(-2)+'/'+('0'+m[2]).slice(-2)+'/'+m[3]};
+  if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})/)))return{v:expSerial(+m[1],+m[2],+m[3]),s:11,t:m[3]+'/'+m[2]+'/'+m[1]};
+  return s;
+};
+// código de semáforo (0 verde / 1 amarillo / 2 rojo) → estilo
+window.expStCod = function(c){return c===2?6:c===1?7:8;};
+window.expCel = function(c){
+  if(c&&typeof c==='object')return c;
+  if(c===null||c===undefined||c==='')return{v:'',s:3};
+  if(typeof c==='number')return isFinite(c)?{v:c,s:(Math.floor(c)===c?4:12)}:{v:'',s:3};
+  return{v:String(c),s:3};
+};
+// Texto de una celda para el PDF
+window.expTxt = function(c){
+  c=expCel(c);
+  if(c.t!==undefined)return String(c.t);
+  if(typeof c.v==='number'){
+    if(c.s===5)return (Math.round(c.v*1000)/10).toLocaleString('es-AR')+'%';
+    if(c.s===12)return c.v.toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1});
+    return Number(c.v).toLocaleString('es-AR');
+  }
+  return String(c.v);
+};
+
+// ── Filtros aplicables por pestaña (para informar solo los que realmente se aplican) ──
+window.expFiltros = function(tab,corto){
+  var aplica={
+    g:['e','m','ti','ce','ru','ci','gp','gs','ta','pa'],c:['e','m','ti','ce','ru','ci','gp','gs','ta','pa'],
+    t:['e','m','ti','ce','ru','ci','gp','gs','ta','pa'],d:['e','m','ti','ce','ru','ci','gp','gs','ta','pa'],
+    u:['e','m','ti','ce','ru','ci','gp','gs','ta','pa'],
+    p:['ce','ti','m','ci','gp','ru','pa'],im:['ce','m','ti','ci','pa'],pl:['ce','ti','m','ci','pa']
+  }[tab]||[];
+  var conFecha=['g','c','t','d','u'].indexOf(tab)>=0;
+  var p=[];
+  DDCFG.forEach(function(d){
+    if(aplica.indexOf(d.k)<0)return;
+    var a=FIL[d.k]||[];if(!a.length)return;
+    p.push(d.l+': '+((corto&&a.length>5)?a.slice(0,5).join(', ')+' (+'+(a.length-5)+' más)':a.join(', ')));
+  });
+  if(conFecha&&(FIL.desde||FIL.hasta))p.push('Período: '+(FIL.desde?fmtM(FIL.desde):'inicio')+' a '+(FIL.hasta?fmtM(FIL.hasta):'último mes'));
+  if(FIL.v)p.push('Búsqueda vehículo: '+FIL.v);
+  return p.length?p.join(' | '):'Sin filtros (todos los datos)';
+};
+
+// ═══════════ DATASETS POR PESTAÑA ═══════════
+// Devuelve {titulo, kpis:[{l,v,f,c,s}], imgs:[idCanvas], hojas:[{n, cols:[{h,w}], filas:[[celdas]], pdf:[idxCols]}]}
+
+window.expDsAnalisis = function(){
+  var tot=DATA.length,at=0,ve1=0,ve2=0,vh={},uinc={},mar={};
+  DATA.forEach(function(r){
+    if(r[E]===0)at++;else if(r[E]===1)ve1++;else{ve2++;uinc[r[V]]=1;}
+    vh[r[V]]=1;
+    if(r[MA]){if(!mar[r[MA]])mar[r[MA]]={t:0,at:0,v1:0,v2:0};var o=mar[r[MA]];o.t++;if(r[E]===0)o.at++;else if(r[E]===1)o.v1++;else o.v2++;}
+  });
+  var veTot=ve1+ve2,pct=tot?(at+ve1)/tot:0,pctVM=veTot?ve2/veTot:0,obj=calcObj();
+  var kpis=[
+    {l:'% Cumplimiento a tiempo',v:pct,f:'pct',c:(pct*100>=obj?'g':'r'),s:'(A tiempo + Venc. en margen) / Total OT · Objetivo '+obj+'%'},
+    {l:'OT totales',v:tot,s:'registros con los filtros aplicados'},
+    {l:'Ejecutadas a tiempo',v:at,c:'g'},
+    {l:'Vencidas en margen',v:ve1,c:'a',s:'dentro del margen de procedimiento'},
+    {l:'Vencidas fuera de margen',v:ve2,c:'r',s:'superan el margen'},
+    {l:'Vencidas según sistema',v:veTot,s:'en margen + fuera de margen'},
+    {l:'% Fuera de margen',v:pctVM,f:'pct',c:'r',s:'sobre el total de vencidas'},
+    {l:'Vehículos únicos',v:Object.keys(vh).length},
+    {l:'Unidades con incumplimiento',v:Object.keys(uinc).length,c:'r',s:'superaron el margen 1 o más veces'}
+  ];
+  var fm=Object.keys(mar).map(function(k){return[k,mar[k]];}).sort(function(a,b){return b[1].t-a[1].t;}).map(function(e){
+    var o=e[1];return[e[0],o.t,o.at,o.v1,o.v2,o.t?o.at/o.t:0,o.t?(o.at+o.v1)/o.t:0];
+  });
+  var ft=getTd().map(function(d){var t=d.t||0,w=d.raw;return[d.mes,t,w.at,t?w.at/t:0,w.ve1,t?w.ve1/t:0,w.ve2,t?w.ve2/t:0];});
+  return{titulo:'Análisis de cumplimiento de mantenimiento preventivo',kpis:kpis,imgs:['cv1'],hojas:[
+    {n:'Por Marca',cols:[{h:'Marca',w:26},{h:'Total OT',w:11},{h:'A tiempo',w:11},{h:'Venc. en margen',w:15},{h:'Venc. fuera margen',w:17},{h:'% A tiempo (estricto)',w:19},{h:'% Cumpl. con margen',w:19}],filas:fm},
+    {n:'Tendencia Mensual',cols:[{h:'Mes',w:12},{h:'Total OT',w:11},{h:'A tiempo',w:11},{h:'% A tiempo',w:12},{h:'En margen',w:11},{h:'% En margen',w:12},{h:'Fuera margen',w:13},{h:'% Fuera margen',w:14}],filas:ft}
+  ]};
+};
+// Atención: los % de las celdas con s:5 se arman como fracción; se les asigna el estilo en expNorm()
+window.expDsCentros = function(){
+  var m={};
+  DATA.forEach(function(r){var c=r[CE]||'(sin centro)';if(!m[c])m[c]={at:0,v1:0,v2:0};if(r[E]===0)m[c].at++;else if(r[E]===1)m[c].v1++;else m[c].v2++;});
+  var en=Object.keys(m).map(function(c){var o=m[c],t=o.at+o.v1+o.v2;return{c:c,at:o.at,v1:o.v1,v2:o.v2,t:t,pc:t?(o.at+o.v1)/t:0,pf:t?o.v2/t:0};}).sort(function(a,b){return b.pc-a.pc;});
+  var bajo=0;
+  var filas=en.map(function(e){
+    var obj=e.c.indexOf('CUYO')>=0?100:95,p=Math.round(e.pc*100);
+    var ok=p>=obj,st=ok?8:(p>=obj-10?7:6);
+    if(!ok)bajo++;
+    return[e.c,e.at,e.v1,e.v2,e.t,e.pc,e.pf,obj/100,{v:ok?'OK':'BAJO',s:st}];
+  });
+  return{titulo:'Cumplimiento por centro de costo',kpis:[
+    {l:'Centros de costo',v:en.length},{l:'Centros bajo objetivo',v:bajo,c:(bajo?'r':'g'),s:'objetivo 100% CUYO-SHELL / 95% resto'},{l:'OT totales',v:DATA.length}
+  ],imgs:[],hojas:[{n:'Centros de Costo',cols:[{h:'Centro de costo',w:42},{h:'A tiempo',w:11},{h:'Venc. en margen',w:15},{h:'Venc. fuera margen',w:17},{h:'Total',w:10},{h:'% A tiempo (con margen)',w:22},{h:'% Fuera margen',w:15},{h:'Objetivo',w:10},{h:'Estado',w:10}],filas:filas}]};
+};
+window.expDsTendencia = function(){
+  var td=getTd();
+  var filas=td.map(function(d){var t=d.t||0,w=d.raw;return[d.mes,t,w.at,t?w.at/t:0,w.ve1,t?w.ve1/t:0,w.ve2,t?w.ve2/t:0];});
+  return{titulo:'Evolución mensual del cumplimiento',kpis:[{l:'Meses analizados',v:td.length},{l:'OT totales',v:DATA.length}],imgs:['cv2'],
+    hojas:[{n:'Evolución Mensual',cols:[{h:'Mes',w:12},{h:'Total OT',w:11},{h:'A tiempo',w:11},{h:'% A tiempo',w:12},{h:'En margen',w:11},{h:'% En margen',w:12},{h:'Fuera margen',w:13},{h:'% Fuera margen',w:14}],filas:filas}]};
+};
+window.expDsDetalle = function(){
+  var at=0,v1=0,v2=0;
+  var filas=DATA.map(function(r,i){
+    if(r[E]===0)at++;else if(r[E]===1)v1++;else v2++;
+    var des='',un='';
+    if(r[TT]==='k'){des=(r[E]===0?1:-1)*(+r[KI]||0);un='km';}
+    else if(r[TT]==='d'&&(+r[KI]||0)>0){des=(r[E]===0?1:-1)*(+r[KI]);un='d';}
+    else if(r[E]!==0){des=-(+r[KI]||0);un='d';}
+    var est=r[E]===0?'A tiempo':r[E]===1?'Venc. en margen':'Venc. fuera margen';
+    return[i+1,r[V],r[TI],r[MA],r[TA],r[RU],r[OT],expFecha(r[FE]),{v:est,s:expStCod(r[E])},des,un,r[GP],r[GS],r[CI]||'',r[CE]||''];
+  });
+  return{titulo:'Detalle de órdenes de trabajo',kpis:[
+    {l:'Registros',v:DATA.length,s:'Excel incluye todos; el PDF muestra hasta '+EXP_PDF_MAX},{l:'A tiempo',v:at,c:'g'},{l:'Venc. en margen',v:v1,c:'a'},{l:'Venc. fuera margen',v:v2,c:'r'}
+  ],imgs:[],hojas:[{n:'Detalle OT',cols:[{h:'#',w:7},{h:'Vehículo',w:12},{h:'Tipo',w:20},{h:'Marca',w:14},{h:'Tarea',w:46},{h:'Rutina',w:22},{h:'Consecutivo',w:14},{h:'Fecha',w:12},{h:'Estado',w:20},{h:'Desvío',w:10},{h:'Unid.',w:7},{h:'Grupo primario',w:24},{h:'Grupo secundario',w:24},{h:'Ciudad',w:16},{h:'Centro de costo',w:30}],
+    filas:filas,pdf:[0,1,3,4,6,7,8,9,10,14]}]};
+};
+window.expDsUnidades = function(){
+  var map={};
+  DATA.forEach(function(r){
+    if(r[E]!==2)return;var v=r[V];
+    if(!map[v])map[v]={ti:r[TI],ce:r[CE],cant:0,maxD:0,maxK:0,ult:r[FE]};
+    map[v].cant++;if(r[DI]>map[v].maxD)map[v].maxD=r[DI];if(r[KI]>map[v].maxK)map[v].maxK=r[KI];if(r[FE]>map[v].ult)map[v].ult=r[FE];
+  });
+  var rows=Object.keys(map).map(function(k){return[k,map[k]];}).sort(function(a,b){return Math.max(b[1].maxD,b[1].maxK)-Math.max(a[1].maxD,a[1].maxK);});
+  var tot=0;
+  var filas=rows.map(function(e){var o=e[1];tot+=o.cant;return[e[0],o.ti,o.ce||'',{v:o.cant,s:6},o.maxD||'',o.maxK||'',expFecha(o.ult)];});
+  return{titulo:'Unidades que superaron el margen de procedimiento',kpis:[
+    {l:'Unidades fuera de margen',v:rows.length,c:'r'},{l:'Incumplimientos totales',v:tot,c:'r',s:'veces fuera de margen'}
+  ],imgs:[],hojas:[{n:'Unidades Fuera de Margen',cols:[{h:'Vehículo',w:13},{h:'Tipo',w:22},{h:'Centro de costo',w:36},{h:'Veces fuera de margen',w:20},{h:'Máx. desvío (días)',w:18},{h:'Máx. desvío (km)',w:17},{h:'Última ocurrencia',w:17}],filas:filas}],
+    nota:'Criterios: días >15d | km general >1.000 km | km CUYO-SHELL >5.000 km. Se muestra el máximo desvío y la última fecha por unidad.'};
+};
+// Mismo filtro y orden que renderPendientes()
+window.expPFil = function(){
+  return P.filter(function(r){
+    if(FIL.ce.length&&FIL.ce.indexOf(r[3])<0)return false;
+    if(FIL.ti.length&&FIL.ti.indexOf(r[1])<0)return false;
+    if(FIL.m.length&&FIL.m.indexOf(r[2])<0)return false;
+    if(FIL.ci.length&&FIL.ci.indexOf(r[4])<0)return false;
+    if(FIL.gp.length&&FIL.gp.indexOf(r[5])<0)return false;
+    if(FIL.ru.length&&FIL.ru.indexOf(r[6])<0)return false;
+    if(FIL.pa.length&&FIL.pa.indexOf(r[0])<0)return false;
+    if(FIL.v&&r[0].toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
+    return true;
+  }).sort(function(a,b){
+    if(b[17]!==a[17])return b[17]-a[17];
+    return a[10]-b[10];
+  });
+};
+window.expDsPlan = function(){
+  var pf=expPFil(),c0=0,c1=0,c2=0;
+  var filas=pf.map(function(r){
+    var cod=r[17]||0;if(cod===2)c2++;else if(cod===1)c1++;else c0++;
+    var ptd=PT[r[0]+'||'+r[15]]||{};
+    return[r[0],r[1],r[2],r[3],r[4],r[6]||'',{v:r[7]||'',s:expStCod(cod)},(r[8]==='k'?'Km':'Días'),r[9]||'',(r[11]||''),(r[12]||''),expFecha(r[13]),r[14],expFecha(ptd.fechaPlanif),ptd.obs||'',r[15]];
+  });
+  return{titulo:'Plan de mantenimiento — consolidado por vehículo y rutina',kpis:[
+    {l:'Total pendientes',v:pf.length,s:'vehículos × rutina'},{l:'Por vencer',v:c0,c:'g',s:'dentro del plazo'},{l:'Vencido en margen',v:c1,c:'a',s:'dentro del margen de procedimiento'},{l:'Vencido fuera de margen',v:c2,c:'r',s:'requiere atención'}
+  ],imgs:[],hojas:[{n:'Plan de Mantenimiento',cols:[{h:'Vehículo',w:12},{h:'Tipo',w:20},{h:'Marca',w:14},{h:'Centro de costos',w:34},{h:'Ciudad',w:16},{h:'Rutina',w:22},{h:'Estado',w:18},{h:'Trigger',w:9},{h:'Desvío',w:16},{h:'Km actual',w:12},{h:'Km a ejecutar',w:13},{h:'Fecha progr.',w:13},{h:'Tareas pend.',w:12},{h:'Fecha planif. taller',w:18},{h:'Observaciones',w:34},{h:'Consecutivo',w:14}],
+    filas:filas,pdf:[0,1,2,5,6,7,8,9,10,11,12,13]}],
+    nota:'Márgenes: días ≤15d | km ≤1.000 (general) / ≤5.000 (CUYO-SHELL).'};
+};
+window.expImplFil = function(){
+  return (IMP.items||[]).filter(function(r){
+    if(FIL.ce.length&&FIL.ce.indexOf(r.centro)<0)return false;
+    if(FIL.m.length&&FIL.m.indexOf(r.marca)<0)return false;
+    if(FIL.ti.length&&FIL.ti.indexOf(r.tipo)<0)return false;
+    if(FIL.ci.length&&FIL.ci.indexOf(r.ciudad)<0)return false;
+    if(FIL.pa.length&&FIL.pa.indexOf(r.patente)<0)return false;
+    if(FIL.v&&r.patente.toLowerCase().indexOf(FIL.v.toLowerCase())<0)return false;
+    return true;
+  });
+};
+window.expDsImpl = function(){
+  var fil=expImplFil(),g=IMP.guardado||{},rut=0,ok=0;
+  var filas=fil.map(function(r){
+    var gg=g[r.patente+'||'+r.item]||{},esR=r.tipoItem==='RUTINA',sem={v:'—',s:3};
+    if(esR){rut++;var i=!!(gg.secActual&&gg.secCorrecta&&gg.secActual.trim()===gg.secCorrecta.trim());if(i){ok++;sem={v:'Implementada',s:8};}else sem={v:'Sin implementar',s:6};}
+    return[r.patente,r.tipo,r.marca,r.centro,r.ciudad,r.item,r.tipoItem,esR?(gg.secActual||''):'',esR?(gg.secCorrecta||''):'',sem,gg.obs||'',gg.estado||'Pendiente'];
+  });
+  var pct=rut?ok/rut:0;
+  return{titulo:'Implementación de preventivos — rutinas y trabajos por unidad',kpis:[
+    {l:'Total ítems',v:fil.length,s:'rutinas + trabajos'},{l:'Rutinas',v:rut},
+    {l:'% Implementación',v:pct,f:'pct',c:(pct>=.95?'g':pct>=.8?'a':'r'),s:'sec. actual = sec. correcta'},
+    {l:'Implementadas',v:ok,c:'g'},{l:'Sin implementar',v:rut-ok,c:'r'}
+  ],imgs:[],hojas:[{n:'Implementación',cols:[{h:'Vehículo',w:12},{h:'Tipo',w:20},{h:'Marca',w:14},{h:'Centro',w:34},{h:'Ciudad',w:16},{h:'Ítem',w:40},{h:'Tipo ítem',w:12},{h:'Sec. actual',w:16},{h:'Sec. correcta',w:16},{h:'Semáforo',w:17},{h:'Observaciones',w:34},{h:'Estado impl.',w:13}],
+    filas:filas,pdf:[0,1,3,5,6,7,8,9,11]}]};
+};
+// Mismo recorte de período que plLista()/plGenerarPDF()
+window.expDsPlan2 = function(){
+  var f=plFil(),y=PL_cursor.getFullYear(),m=PL_cursor.getMonth(),regs=[],titulo='',serie=[],etiq=[];
+  if(PL_vista==='mes'){
+    titulo=new Date(y,m,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+    regs=f.filter(function(r){var fe=plFechaEf(r);if(!fe)return false;if(r[17]>0)return true;return fe.getFullYear()===y&&fe.getMonth()===m;});
+    for(var d=1;d<=new Date(y,m+1,0).getDate();d++){
+      serie.push(f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.getFullYear()===y&&fe.getMonth()===m&&fe.getDate()===d;}));
+      etiq.push(plToDDMM(new Date(y,m,d)));
+    }
+  }else if(PL_vista==='semana'){
+    var lunes=new Date(PL_cursor);lunes.setDate(PL_cursor.getDate()-((PL_cursor.getDay()+6)%7));
+    var dom=new Date(lunes);dom.setDate(lunes.getDate()+6);
+    titulo='Semana del '+plToDDMM(lunes);
+    regs=f.filter(function(r){var fe=plFechaEf(r);if(!fe)return false;if(r[17]>0)return true;return fe>=lunes&&fe<=dom;});
+    for(var s=0;s<7;s++){var sd=new Date(lunes);sd.setDate(lunes.getDate()+s);
+      serie.push(f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.toDateString()===sd.toDateString();}));etiq.push(plToDDMM(sd));}
+  }else{
+    var dd=PL_cursor.getDate();
+    titulo=PL_cursor.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    regs=f.filter(function(r){var fe=plFechaEf(r);return fe&&fe.getFullYear()===y&&fe.getMonth()===m&&fe.getDate()===dd;});
+    serie.push(regs);etiq.push(plToDDMM(PL_cursor));
+  }
+  regs.sort(function(a,b){if(b[17]!==a[17])return b[17]-a[17];return(plDiasDiff(plFechaEf(a))||0)-(plDiasDiff(plFechaEf(b))||0);});
+  var c2=0,c1=0,c0=0;
+  var filas=regs.map(function(r,i){
+    if(r[17]===2)c2++;else if(r[17]===1)c1++;else c0++;
+    var clave=r[0]+'||'+r[15],fe=plFechaEf(r),est=r[17]===2?'Fuera margen':r[17]===1?'En margen':'Por vencer';
+    return[i+1,r[0],r[1],r[2],r[6]||'Trabajo',r[3],r[4],expFecha(r[13]),fe?{v:expSerial(fe.getFullYear(),fe.getMonth()+1,fe.getDate()),s:11,t:plToDDMM(fe)}:'',PL_FMOD[clave]?'Sí':'No',{v:est,s:expStCod(r[17])},r[9]||'',r[11]||'',r[12]||'',r[14],r[15]];
+  });
+  var dTot=0,dCon=0;
+  var fd=serie.map(function(a,i){
+    var fu=a.filter(function(r){return r[17]===2;}).length,ma=a.filter(function(r){return r[17]===1;}).length,ok=a.length-fu-ma;
+    dTot+=a.length;if(a.length)dCon++;return[etiq[i],a.length,fu,ma,ok];
+  });
+  var prom=dCon?dTot/dCon:0;
+  return{titulo:'Planificación de preventivos — '+titulo,kpis:[
+    {l:'Total unidades',v:regs.length,s:'preventivos en cartera del período'},{l:'Fuera de margen',v:c2,c:'r',s:'requieren atención inmediata'},
+    {l:'En margen',v:c1,c:'a',s:'vencidos dentro del procedimiento'},{l:'Por vencer / al día',v:c0,c:'g',s:'dentro del plazo'},
+    {l:'Promedio por día',v:prom,f:'dec',s:'preventivos por día con actividad'},{l:'Días con preventivos',v:dCon,s:'de '+serie.length+' días del período'}
+  ],imgs:[],hojas:[
+    {n:'Listado',cols:[{h:'#',w:6},{h:'Patente',w:12},{h:'Tipo',w:20},{h:'Marca',w:14},{h:'Rutina',w:22},{h:'Centro de costos',w:34},{h:'Ciudad',w:16},{h:'Fecha programada',w:17},{h:'Fecha planificada',w:17},{h:'Fecha modificada',w:16},{h:'Estado',w:15},{h:'Desvío',w:16},{h:'Km actual',w:12},{h:'Km a ejecutar',w:13},{h:'Tareas pend.',w:12},{h:'Consecutivo',w:14}],
+      filas:filas,pdf:[0,1,2,3,4,8,10,11]},
+    {n:'Por Día',cols:[{h:'Fecha',w:13},{h:'Total',w:9},{h:'Fuera margen',w:14},{h:'En margen',w:12},{h:'Por vencer',w:12}],filas:fd}
+  ]};
+};
+
+window.expDataset = function(tab){
+  if(tab==='g')return expDsAnalisis();
+  if(tab==='c')return expDsCentros();
+  if(tab==='t')return expDsTendencia();
+  if(tab==='d')return expDsDetalle();
+  if(tab==='u')return expDsUnidades();
+  if(tab==='p')return expDsPlan();
+  if(tab==='im')return expDsImpl();
+  if(tab==='pl')return expDsPlan2();
+  return null;
+};
+window.expNombre = function(tab){
+  return {g:'Analisis',c:'Centros_Costo',t:'Tendencia',d:'Detalle_OT',u:'Unidades_Fuera_Margen',p:'Plan_Mantenimiento',im:'Implementacion',pl:'Planificacion'}[tab]||tab;
+};
+// Los % se arman como fracción: en cada hoja las columnas cuyo encabezado empieza con "%" o es "Objetivo" llevan formato 0%
+window.expNorm = function(cols,filas){
+  var pct=cols.map(function(c){return /^%/.test(c.h)||c.h==='Objetivo';});
+  return filas.map(function(f){return f.map(function(c,i){
+    c=expCel(c);
+    if(pct[i]&&typeof c.v==='number'&&(c.s===4||c.s===12))return{v:c.v,s:5};
+    return c;
+  });});
+};
+
+// ═══════════ EXCEL ═══════════
+window.expCrcTabla = null;
+window.expCrc32 = function(buf){
+  if(!expCrcTabla){expCrcTabla=new Uint32Array(256);for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);expCrcTabla[n]=c>>>0;}}
+  var crc=0xFFFFFFFF;for(var i=0;i<buf.length;i++)crc=expCrcTabla[(crc^buf[i])&0xFF]^(crc>>>8);
+  return (crc^0xFFFFFFFF)>>>0;
+};
+window.expStylesXml = function(){
+  var f=function(inner){return '<font>'+inner+'<name val="Calibri"/><family val="2"/></font>';};
+  var fonts=[f('<sz val="11"/>'),f('<b/><sz val="14"/><color rgb="FF1A1A1A"/>'),f('<b/><sz val="10"/><color rgb="FFFFFFFF"/>'),f('<b/><sz val="11"/>'),f('<i/><sz val="10"/><color rgb="FF6B7280"/>'),f('<b/><sz val="11"/><color rgb="FF991B1B"/>'),f('<b/><sz val="11"/><color rgb="FF854D0E"/>'),f('<b/><sz val="11"/><color rgb="FF166534"/>')];
+  var pf=function(rgb){return '<fill><patternFill patternType="solid"><fgColor rgb="'+rgb+'"/><bgColor indexed="64"/></patternFill></fill>';};
+  var fills=['<fill><patternFill patternType="none"/></fill>','<fill><patternFill patternType="gray125"/></fill>',pf('FF1A1A1A'),pf('FFFEE2E2'),pf('FFFEF9C3'),pf('FFDCFCE7'),pf('FFF3F4F6')];
+  var bd='<border><left style="thin"><color rgb="FFD1D5DB"/></left><right style="thin"><color rgb="FFD1D5DB"/></right><top style="thin"><color rgb="FFD1D5DB"/></top><bottom style="thin"><color rgb="FFD1D5DB"/></bottom><diagonal/></border>';
+  var borders=['<border><left/><right/><top/><bottom/><diagonal/></border>',bd];
+  // [numFmtId,fontId,fillId,borderId,alignment]
+  var xf=[[0,0,0,0,''],[0,1,0,0,''],[0,2,2,1,'<alignment horizontal="center" vertical="center" wrapText="1"/>'],[0,0,0,1,'<alignment vertical="top"/>'],[3,0,0,1,'<alignment vertical="top"/>'],[9,0,0,1,'<alignment vertical="top"/>'],[0,5,3,1,'<alignment vertical="top"/>'],[0,6,4,1,'<alignment vertical="top"/>'],[0,7,5,1,'<alignment vertical="top"/>'],[0,3,6,1,'<alignment vertical="top"/>'],[0,4,0,0,''],[164,0,0,1,'<alignment horizontal="center" vertical="top"/>'],[165,0,0,1,'<alignment vertical="top"/>']];
+  var x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+  x+='<numFmts count="2"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="0.0"/></numFmts>';
+  x+='<fonts count="'+fonts.length+'">'+fonts.join('')+'</fonts><fills count="'+fills.length+'">'+fills.join('')+'</fills><borders count="'+borders.length+'">'+borders.join('')+'</borders>';
+  x+='<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>';
+  x+='<cellXfs count="'+xf.length+'">'+xf.map(function(a){return '<xf numFmtId="'+a[0]+'" fontId="'+a[1]+'" fillId="'+a[2]+'" borderId="'+a[3]+'" xfId="0"'+(a[0]?' applyNumberFormat="1"':'')+' applyFont="1" applyFill="1" applyBorder="1"'+(a[4]?' applyAlignment="1">'+a[4]+'</xf>':'/>');}).join('')+'</cellXfs>';
+  x+='<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  return x;
+};
+window.expSheetXml = function(sh,primera){
+  var filas=sh.filas,nr=filas.length,nc=0;
+  filas.forEach(function(r){if(r.length>nc)nc=r.length;});
+  if(nc<1)nc=1;
+  var x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+  x+='<dimension ref="A1:'+expColL(nc-1)+Math.max(nr,1)+'"/>';
+  x+='<sheetViews><sheetView workbookViewId="0"'+(primera?' tabSelected="1"':'')+' showGridLines="0">';
+  if(sh.hdr>=0)x+='<pane ySplit="'+(sh.hdr+1)+'" topLeftCell="A'+(sh.hdr+2)+'" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A'+(sh.hdr+2)+'" sqref="A'+(sh.hdr+2)+'"/>';
+  x+='</sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>';
+  if(sh.anchos&&sh.anchos.length){x+='<cols>'+sh.anchos.map(function(w,i){return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>';}).join('')+'</cols>';}
+  x+='<sheetData>';
+  for(var i=0;i<nr;i++){
+    var r=filas[i];if(!r||!r.length)continue;
+    x+='<row r="'+(i+1)+'"'+(i===sh.hdr?' ht="30" customHeight="1"':'')+'>';
+    for(var j=0;j<r.length;j++){
+      var c=expCel(r[j]),ref=expColL(j)+(i+1);
+      if(typeof c.v==='number')x+='<c r="'+ref+'" s="'+c.s+'"><v>'+c.v+'</v></c>';
+      else if(c.v==='')x+='<c r="'+ref+'" s="'+c.s+'"/>';
+      else x+='<c r="'+ref+'" s="'+c.s+'" t="inlineStr"><is><t xml:space="preserve">'+expEsc(c.v)+'</t></is></c>';
+    }
+    x+='</row>';
+  }
+  x+='</sheetData>';
+  if(sh.hdr>=0&&nr>sh.hdr+1)x+='<autoFilter ref="A'+(sh.hdr+1)+':'+expColL(nc-1)+nr+'"/>';
+  x+='<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/><pageSetup orientation="landscape" fitToHeight="0"/></worksheet>';
+  return x;
+};
+// Comprime con deflate-raw si el navegador lo soporta; si no, guarda sin comprimir (STORE)
+window.expComprimir = function(u8){
+  if(typeof CompressionStream==='undefined')return Promise.resolve(null);
+  try{
+    var cs=new CompressionStream('deflate-raw');
+    return new Response(new Blob([u8]).stream().pipeThrough(cs)).arrayBuffer().then(function(b){return new Uint8Array(b);}).catch(function(){return null;});
+  }catch(e){return Promise.resolve(null);}
+};
+window.expZip = function(files){
+  var enc=new TextEncoder(),d=new Date();
+  var dt=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1);
+  var dd=((Math.max(d.getFullYear(),1980)-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+  return Promise.all(files.map(function(f){
+    var data=enc.encode(f.data);
+    return expComprimir(data).then(function(cmp){
+      return{name:enc.encode(f.name),crc:expCrc32(data),usz:data.length,data:cmp||data,metodo:cmp?8:0};
+    });
+  })).then(function(L){
+    var parts=[],central=[],off=0;
+    L.forEach(function(f){
+      var lh=new DataView(new ArrayBuffer(30));
+      lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,f.metodo,true);
+      lh.setUint16(10,dt,true);lh.setUint16(12,dd,true);lh.setUint32(14,f.crc,true);lh.setUint32(18,f.data.length,true);lh.setUint32(22,f.usz,true);
+      lh.setUint16(26,f.name.length,true);lh.setUint16(28,0,true);
+      parts.push(new Uint8Array(lh.buffer),f.name,f.data);
+      var ch=new DataView(new ArrayBuffer(46));
+      ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,f.metodo,true);
+      ch.setUint16(12,dt,true);ch.setUint16(14,dd,true);ch.setUint32(16,f.crc,true);ch.setUint32(20,f.data.length,true);ch.setUint32(24,f.usz,true);
+      ch.setUint16(28,f.name.length,true);ch.setUint32(42,off,true);
+      central.push(new Uint8Array(ch.buffer),f.name);
+      off+=30+f.name.length+f.data.length;
+    });
+    var csz=0;central.forEach(function(p){csz+=p.length;});
+    var eo=new DataView(new ArrayBuffer(22));
+    eo.setUint32(0,0x06054b50,true);eo.setUint16(8,L.length,true);eo.setUint16(10,L.length,true);eo.setUint32(12,csz,true);eo.setUint32(16,off,true);
+    return new Blob(parts.concat(central,[new Uint8Array(eo.buffer)]),{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  });
+};
+// sheets: [{n, anchos, filas, hdr}] → Blob .xlsx
+window.expXlsx = function(sheets){
+  var usados={};
+  sheets.forEach(function(s){
+    var n=String(s.n).replace(/[\[\]:*?\/\\]/g,'-').substring(0,31),base=n,k=2;
+    while(usados[n.toLowerCase()]){n=base.substring(0,28)+'('+(k++)+')';}
+    usados[n.toLowerCase()]=1;s.n=n;
+  });
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+  sheets.forEach(function(s,i){ct+='<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';});
+  ct+='</Types>';
+  var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  var wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView activeTab="0"/></bookViews><sheets>';
+  sheets.forEach(function(s,i){wb+='<sheet name="'+expEsc(s.n)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>';});
+  wb+='</sheets></workbook>';
+  var wr='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+  sheets.forEach(function(s,i){wr+='<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>';});
+  wr+='<Relationship Id="rId'+(sheets.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+  var files=[{name:'[Content_Types].xml',data:ct},{name:'_rels/.rels',data:rels},{name:'xl/workbook.xml',data:wb},{name:'xl/_rels/workbook.xml.rels',data:wr},{name:'xl/styles.xml',data:expStylesXml()}];
+  sheets.forEach(function(s,i){files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:expSheetXml(s,i===0)});});
+  return expZip(files);
+};
+window.expDescargar = function(blob,nombre){
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=nombre;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);if(a.parentNode)a.parentNode.removeChild(a);},2000);
+};
+window.expHoy = function(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);};
+
+window.expExcel = function(tab){
+  try{
+    var ds=expDataset(tab);if(!ds)return;
+    var S=EXP_S,ahora=new Date().toLocaleString('es-AR');
+    var res=[
+      [{v:ds.titulo,s:S.TIT}],
+      [{v:'Griffouliere S.A. · SGI · Mantenimiento Preventivo — Generado: '+ahora,s:S.NOTE}],
+      [{v:'Filtros aplicados: '+expFiltros(tab,false),s:S.NOTE}]
+    ];
+    if(ds.nota)res.push([{v:ds.nota,s:S.NOTE}]);
+    res.push([]);
+    var hdr=res.length;
+    res.push([{v:'Indicador',s:S.HDR},{v:'Valor',s:S.HDR},{v:'Detalle',s:S.HDR}]);
+    ds.kpis.forEach(function(k){
+      var st=k.f==='pct'?S.PCT:(k.f==='dec'?S.DEC:S.INT);
+      if(k.c==='r')st=(k.f==='pct'||k.f==='dec')?st:S.RED;else if(k.c==='a')st=(k.f==='pct'||k.f==='dec')?st:S.YEL;else if(k.c==='g')st=(k.f==='pct'||k.f==='dec')?st:S.GRN;
+      res.push([{v:k.l,s:S.LBL},{v:k.v,s:st},{v:k.s||'',s:S.TXT}]);
+    });
+    var sheets=[{n:'Resumen',anchos:[44,16,60],filas:res,hdr:-1}];
+    ds.hojas.forEach(function(h){
+      var head=h.cols.map(function(c){return{v:c.h,s:S.HDR};});
+      sheets.push({n:h.n,anchos:h.cols.map(function(c){return c.w;}),filas:[head].concat(expNorm(h.cols,h.filas)),hdr:0});
+    });
+    toast('Generando Excel...','ok');
+    expXlsx(sheets).then(function(blob){
+      expDescargar(blob,'Griffouliere_'+expNombre(tab)+'_'+expHoy()+'.xlsx');
+      toast('Excel descargado','ok');
+    }).catch(function(e){console.error('expExcel',e);toast('No se pudo generar el Excel: '+e.message,'er');});
+  }catch(e){console.error('expExcel',e);toast('No se pudo generar el Excel: '+e.message,'er');}
+};
+
+// ═══════════ PDF (reutiliza el visor #pl-informe + window.print) ═══════════
+window.expPDF = function(tab){
+  try{
+    var ds=expDataset(tab);if(!ds)return;
+    var ahora=new Date().toLocaleString('es-AR'),col={r:'var(--R)',a:'var(--A)',g:'var(--G)'};
+    var h='<div class="pl-page ex-page">';
+    h+='<div class="pl-hdr"><div><div class="pl-hdr-logo">GRIFFOULIERE</div><div class="pl-hdr-sub">SGI · Mantenimiento Preventivo</div></div>';
+    h+='<div class="pl-hdr-title"><strong>'+expEsc(ds.titulo)+'</strong>Generado: '+expEsc(ahora)+'</div></div>';
+    h+='<div class="ex-fil"><b>Filtros aplicados:</b> '+expEsc(expFiltros(tab,true))+'</div>';
+    if(ds.nota)h+='<div class="ex-fil">'+expEsc(ds.nota)+'</div>';
+    if(ds.kpis&&ds.kpis.length){
+      h+='<div class="pl-sec">Indicadores</div><div class="pl-kpis" style="grid-template-columns:repeat('+(ds.kpis.length<=4?ds.kpis.length:3)+',1fr)">';
+      ds.kpis.forEach(function(k){
+        var cc=k.c?col[k.c]:'var(--GT)';
+        var val=k.f==='pct'?expTxt({v:k.v,s:5}):(k.f==='dec'?expTxt({v:k.v,s:12}):expTxt({v:k.v,s:4}));
+        h+='<div class="pl-kpi" style="border-top:3px solid '+cc+'"><div class="pl-kpi-l">'+expEsc(k.l)+'</div><div class="pl-kpi-v" style="color:'+(k.c?cc:'inherit')+'">'+expEsc(val)+'</div><div class="pl-kpi-s">'+expEsc(k.s||'')+'</div></div>';
+      });
+      h+='</div>';
+    }
+    (ds.imgs||[]).forEach(function(id){
+      var cv=document.getElementById(id);
+      if(cv&&cv.width>0&&cv.height>0){
+        try{h+='<div class="pl-sec">Gráfico</div><div class="pl-graf"><img src="'+cv.toDataURL('image/png')+'" style="width:100%;display:block"></div>';}catch(e){}
+      }
+    });
+    ds.hojas.forEach(function(hj){
+      var idx=hj.pdf||hj.cols.map(function(c,i){return i;});
+      var filas=expNorm(hj.cols,hj.filas),total=filas.length,mostrar=filas.slice(0,EXP_PDF_MAX);
+      h+='<div class="pl-sec">'+expEsc(hj.n)+' ('+total.toLocaleString('es-AR')+')</div>';
+      h+='<table class="pl-tbl ex-tbl'+(idx.length>9?' ex-wide':'')+'"><thead><tr>'+idx.map(function(i){return '<th>'+expEsc(hj.cols[i].h)+'</th>';}).join('')+'</tr></thead><tbody>';
+      if(!mostrar.length)h+='<tr><td colspan="'+idx.length+'" style="text-align:center;color:#6b7280;padding:12px">Sin datos con los filtros actuales</td></tr>';
+      mostrar.forEach(function(f){
+        h+='<tr>'+idx.map(function(i){
+          var c=expCel(f[i]),t=expEsc(expTxt(c));
+          if(c.s===6||c.s===7||c.s===8)return '<td><span class="pl-badge '+(c.s===6?'pl-bv':c.s===7?'pl-ba':'pl-bo')+'">'+t+'</span></td>';
+          var num=(typeof c.v==='number'&&c.s!==11);
+          return '<td'+(num?' style="text-align:right"':'')+'>'+t+'</td>';
+        }).join('')+'</tr>';
+      });
+      h+='</tbody></table>';
+      if(total>mostrar.length)h+='<div class="ex-fil">Se muestran '+mostrar.length.toLocaleString('es-AR')+' de '+total.toLocaleString('es-AR')+' registros. Para el detalle completo usá la exportación a Excel.</div>';
+    });
+    h+='<div class="ex-foot"><span>Griffouliere S.A. · SGI · Mantenimiento Preventivo</span><span>Generado: '+expEsc(ahora)+'</span></div></div>';
+    document.getElementById('pl-informe-content').innerHTML=h;
+    document.getElementById('pl-informe').style.display='block';
+  }catch(e){console.error('expPDF',e);toast('No se pudo generar el PDF: '+e.message,'er');}
+};
 
 buildOpts();initDD();go();
 toast(fmt(D.length)+' registros cargados','ok');
